@@ -377,11 +377,15 @@ MonoBehaviour:
   ignoreLayer:
     serializedVersion: 2
     m_Bits: 0
-  HP: 0
-  speed: 0
-  sprintSpeed: 0
-  jumpSpeed: 0
-  maxJumps: 0
+  HP: 15
+  speed: 5
+  sprintSpeed: 15
+  jumpSpeed: 5
+  maxJumps: 2
+  gravity: 12
+  shootDamage: 0
+  shootDist: 0
+  shootRate: 0
 --- !u!1 &765536622
 GameObject:
   m_ObjectHideFlags: 0
