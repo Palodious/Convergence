@@ -44,12 +44,17 @@ public class playerController : MonoBehaviour
     Vector3 dodgeDir;
 
     int jumpCount; // for double jumps
+    float shootTimer; // time for rounds before disappearing
+    float slideTimer;
+    float dodgeTimer;
+    float dodgeCDTimer;
+
+    bool isSliding;
     bool isWallRunning; //for wall run
     bool isGliding; // for glide
     bool isCrouching; // for crouch
     bool isDodging; // for dodge
 
-    float shootTimer; // time for rounds before disappearing
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -71,25 +76,66 @@ public class playerController : MonoBehaviour
 
     void movement()
     {
-        if (controller.isGrounded) //sets up player movement and jump
+        if (isDodging)
+        {
+            dodgeTimer += Time.deltaTime;
+            controller.Move(dodgeDir * dodgeSpeed * Time.deltaTime);
+            if (dodgeTimer >= dodgeDuration) stopDodge();
+            return;
+        }
+
+        if (controller.isGrounded)
         {
             playerVel = Vector3.zero;
             jumpCount = 0;
+            isWallRunning = false;
+            isGliding = false;
         }
-        else    // gives gravity so player returns to griound after jumping
+        else
         {
-            playerVel.y -= gravity * Time.deltaTime;
+            if (!isWallRunning && !isGliding)
+                playerVel.y -= gravity * Time.deltaTime;
         }
-        moveDir = Input.GetAxis("Horizontal") * transform.right + Input.GetAxis("Vertical") * transform.forward;
-        controller.Move(moveDir * speed * Time.deltaTime);
 
-        jump();
-        controller.Move(playerVel * Time.deltaTime);
-        //fires weapon when butto pressed
-        if (Input.GetButton("Fire1") && shootTimer >= shootRate)
+        moveDir = Input.GetAxis("Horizontal") * transform.right + Input.GetAxis("Vertical") * transform.forward;
+
+        float moveSpeed = isCrouching ? speed * crouchSpeedMod : speed;
+        controller.Move(moveDir * moveSpeed * Time.deltaTime);
+
+        if (Input.GetButtonDown("Jump") && jumpCount < maxJumps)
+            jump();
+
+        if (!controller.isGrounded && playerVel.y < 0 && Input.GetButton("Jump"))
+            startGlide();
+        else if (isGliding && (!Input.GetButton("Jump") || controller.isGrounded))
+            stopGlide();
+
+        if (!controller.isGrounded && Input.GetAxis("Vertical") > 0)
+            checkWallRun();
+        else if (isWallRunning && controller.isGrounded)
+            isWallRunning = false;
+
+        if (Input.GetButtonDown("Crouch") && controller.isGrounded && !isSliding)
+            toggleCrouch();
+
+        if (Input.GetButtonDown("Slide") && controller.isGrounded && !isSliding)
+            startSlide();
+
+        if (isSliding)
         {
-            shoot();
+            slideTimer += Time.deltaTime;
+            controller.Move(transform.forward * slideSpeed * Time.deltaTime);
+            if (slideTimer >= slideDuration)
+                stopSlide();
         }
+
+        if (Input.GetButtonDown("Dodge") && dodgeCDTimer >= dodgeCooldown && !isDodging)
+            startDodge();
+
+        controller.Move(playerVel * Time.deltaTime);
+
+        if (Input.GetButton("Fire1") && shootTimer >= shootRate)
+            shoot();
     }
     // sprint function set
     void sprint()
@@ -129,7 +175,66 @@ public class playerController : MonoBehaviour
             }
         }
     }
+    // Slide start and stop
+    void startSlide()
+    {
+        isSliding = true;
+        slideTimer = 0;
+        controller.height = crouchHeight;
+    }
+    void stopSlide()
+    {
+        isSliding = false;
+        controller.height = normalHeight;
+    }
 
+    // Crouch toggle
+    void toggleCrouch()
+    {
+        isCrouching = !isCrouching;
+        controller.height = isCrouching ? crouchHeight : normalHeight;
+    }
+
+    // Glide
+    void startGlide()
+    {
+        isGliding = true;
+        playerVel.y = Mathf.Max(playerVel.y, -gravity * glideGravityScale);
+    }
+    void stopGlide() { isGliding = false; }
+
+    // Wall-run
+    void checkWallRun()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, transform.right, out hit, wallCheckDist, wallMask))
+            startWallRun(hit.normal);
+        else if (Physics.Raycast(transform.position, -transform.right, out hit, wallCheckDist, wallMask))
+            startWallRun(hit.normal);
+        else if (isWallRunning) stopWallRun();
+    }
+    void startWallRun(Vector3 normal)
+    {
+        isWallRunning = true;
+        wallNormal = normal;
+        playerVel.y = 0;
+        Vector3 alongWall = Vector3.Cross(wallNormal, Vector3.up);
+        controller.Move(alongWall * wallRunSpeed * Time.deltaTime);
+        playerVel.y -= wallRunGravity * Time.deltaTime;
+    }
+    void stopWallRun() { isWallRunning = false; }
+
+    // Dodge Roll
+    void startDodge()
+    {
+        isDodging = true;
+        dodgeTimer = 0;
+        dodgeCDTimer = 0;
+        dodgeDir = transform.forward;
+    }
+    void stopDodge()
+    {
+        isDodging = false;
     public void takeDamage(int amount) //take damage
     {
         HP -= amount;
