@@ -34,6 +34,35 @@ public class playerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
+
+        shootTimer += Time.deltaTime;
+
+        movement();
+        sprint();
+
+    }
+
+    void movement()
+    {
+        if (controller.isGrounded) //sets up player movement and jump
+        {
+            playerVel = Vector3.zero;
+            jumpCount = 0;
+        }
+        else    // gives gravity so player returns to griound after jumping
+        {
+            playerVel.y -= gravity * Time.deltaTime;
+        }
+        moveDir = Input.GetAxis("Horizontal") * transform.right + Input.GetAxis("Vertical") * transform.forward;
+        controller.Move(moveDir * speed * Time.deltaTime);
+
+        jump();
+        controller.Move(playerVel * Time.deltaTime);
+        //fires weapon when butto pressed
+        if (Input.GetButton("Fire1") && shootTimer >= shootRate)
+        {
+            shoot();
+        }
     }
 }
