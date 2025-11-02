@@ -17,6 +17,14 @@ public class playerController : MonoBehaviour
     [SerializeField] int shootDist; // damage dealt distance
     [SerializeField] float shootRate; //set rate of fire
 
+    //Player movement
+    Vector3 moveDir;
+    Vector3 playerVel;
+
+    int jumpCount; // for double jumps
+
+    float shootTimer; // time for rounds before disappearing
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
