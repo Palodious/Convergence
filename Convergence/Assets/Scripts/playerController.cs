@@ -11,6 +11,12 @@ public class playerController : MonoBehaviour
     [SerializeField] int sprintSpeed; //set Player sprint setting
     [SerializeField] int jumpSpeed; // set jump setting
     [SerializeField] int maxJumps; // set jump count
+    [SerializeField] int gravity; // set player gravity
+
+    [SerializeField] int shootDamage; //damage output
+    [SerializeField] int shootDist; // damage dealt distance
+    [SerializeField] float shootRate; //set rate of fire
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
