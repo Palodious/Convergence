@@ -87,4 +87,21 @@ public class playerController : MonoBehaviour
         }
     }
 
+    void shoot() // shoot function using raycast
+    {
+        shootTimer = 0;
+
+        RaycastHit hit;
+        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
+        {
+            Debug.Log(hit.collider.name);
+
+            IDamage dmg = hit.collider.GetComponent<IDamage>();
+            if (dmg != null)
+            {
+                dmg.takeDamage(shootDamage);
+            }
+        }
+    }
+
 }
