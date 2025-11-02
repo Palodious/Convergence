@@ -104,4 +104,15 @@ public class playerController : MonoBehaviour
         }
     }
 
+    public void takeDamage(int amount) //take damage
+    {
+        HP -= amount;
+        if (HP <= 0)
+        {
+            // You Lose!!!
+            gamemanager.instance.youLose();
+        }
+    }
+
+
 }
