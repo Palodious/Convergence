@@ -17,11 +17,37 @@ public class playerController : MonoBehaviour
     [SerializeField] int shootDist; // damage dealt distance
     [SerializeField] float shootRate; //set rate of fire
 
+    //slide
+    [SerializeField] float slideDuration = 1f; 
+    [SerializeField] float slideSpeed = 12f;
+    //wall run
+    [SerializeField] float wallRunSpeed = 7f;
+    [SerializeField] float wallRunGravity = 5f;
+    [SerializeField] float wallCheckDist = 1f;
+    [SerializeField] LayerMask wallMask;
+    // glide 
+    [SerializeField] float glideGravityScale = 0.3f;
+    //crouch
+    [SerializeField] float crouchHeight = 1f;
+    [SerializeField] float normalHeight = 2f;
+    [SerializeField] float crouchSpeedMod = 0.5f;
+    //dodge
+    [SerializeField] float dodgeSpeed = 15f;
+    [SerializeField] float dodgeDuration = 0.25f;
+    [SerializeField] float dodgeCooldown = 1f;
+
+
     //Player movement
     Vector3 moveDir;
     Vector3 playerVel;
+    Vector3 wallNormal;
+    Vector3 dodgeDir;
 
     int jumpCount; // for double jumps
+    bool isWallRunning; //for wall run
+    bool isGliding; // for glide
+    bool isCrouching; // for crouch
+    bool isDodging; // for dodge
 
     float shootTimer; // time for rounds before disappearing
 
@@ -114,5 +140,18 @@ public class playerController : MonoBehaviour
         }
     }
 
+
+    // Slide start and stop
+    void startSlide()
+    {
+        isSliding = true;
+        slideTimer = 0;
+        controller.height = crouchHeight;
+    }
+    void stopSlide()
+    {
+        isSliding = false;
+        controller.height = normalHeight;
+    }
 
 }
