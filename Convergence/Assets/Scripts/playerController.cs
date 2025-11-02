@@ -77,4 +77,14 @@ public class playerController : MonoBehaviour
             speed /= sprintMod;
         }
     }
+
+    void jump() // jump function
+    {
+        if (Input.GetButtonDown("Jump") && jumpCount < maxJumps)
+        {
+            playerVel.y = JumpSpeed;
+            jumpCount++;
+        }
+    }
+
 }
