@@ -366,7 +366,8 @@ Transform:
   m_LocalPosition: {x: 0.35355, y: 1.02, z: 0.35355}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 765536625}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &752554655
@@ -387,7 +388,7 @@ MonoBehaviour:
     m_Bits: 0
   HP: 15
   speed: 5
-  sprintMod: 0
+  sprintMod: 3
   JumpSpeed: 0
   maxJumps: 1
   gravity: 12
@@ -428,9 +429,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 765536625}
+  - component: {fileID: 765536628}
   - component: {fileID: 765536624}
   - component: {fileID: 765536623}
   - component: {fileID: 765536626}
+  - component: {fileID: 765536627}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -506,11 +509,11 @@ Transform:
   m_GameObject: {fileID: 765536622}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.43745002, y: 1.5799999, z: 0.57554996}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 752554654}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &765536626
 MonoBehaviour:
@@ -556,6 +559,38 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!114 &765536627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 765536622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d439bbd342daec41a9ed9e0267c452d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::cameraController
+  sens: 0
+  lockVertMin: 0
+  lockVertMax: 0
+  invertY: 0
+--- !u!114 &765536628
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 765536622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d439bbd342daec41a9ed9e0267c452d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::cameraController
+  sens: 300
+  lockVertMin: -90
+  lockVertMax: 90
+  invertY: 0
 --- !u!1001 &1248600784
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -630,7 +665,6 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 765536625}
   - {fileID: 575041402}
   - {fileID: 417439294}
   - {fileID: 752554654}
