@@ -3,6 +3,7 @@ using TMPro;
 
 public class MissionHUD : MonoBehaviour
 {
+    [Header("UI References")]
     [SerializeField] private TMP_Text missionNameText;
     [SerializeField] private TMP_Text objectiveProgressText;
     [SerializeField] private GameObject missionCompletePanel;
@@ -12,42 +13,41 @@ public class MissionHUD : MonoBehaviour
     {
         if (Mission.instance != null)
         {
-            Mission.instance.StartMission();
-            UpdateHUD();
+            missionNameText.text = Mission.instance.missionName;
+            UpdateObjectiveProgress(0, Mission.instance.totalObjectives);
+            missionCompletePanel.SetActive(false);
+            missionFailPanel.SetActive(false);
 
-            // Hook into mission events here if needed
+            Mission.instance.OnObjectiveProgressChanged += UpdateObjectiveProgress;
+            Mission.instance.OnMissionCompleted += OnMissionCompleted;
         }
     }
 
-    private void Update()
+    private void OnDisable()
     {
         if (Mission.instance != null)
-        {
-            UpdateHUD();
+        { 
+            Mission.instance.OnObjectiveProgressChanged -= UpdateObjectiveProgress;
+            Mission.instance.OnMissionCompleted -= OnMissionCompleted;
         }
     }
 
-    private void UpdateHUD()
+    private void UpdateObjectiveProgress(int completed, int total)
     {
-        // Update mission name and objectives
-        missionNameText.text = Mission.instance.missionName;
-        objectiveProgressText.text = $"Objectives: {Mission.instance.objectivesCompleted}/{Mission.instance.totalObjectives}";
+        objectiveProgressText.text = $"Objectives: {completed} / {total}";
+    }
 
-        // Show/hide panels based on mission state
-        missionCompletePanel.SetActive(false);
-        missionFailPanel.SetActive(false);
-
-        // A check for mission complete or fail
-        if (!Mission.instance.missionStarted)
+    private void OnMissionCompleted(bool success)
+    {
+        if (success)
         {
-            if (Mission.instance.objectivesCompleted >= Mission.instance.totalObjectives)
-            {
-                missionCompletePanel.SetActive(true);
-            }
-            else
-            {
-                missionFailPanel.SetActive(true);
-            }
+            missionCompletePanel.SetActive(true);
+            missionFailPanel.SetActive(false);
+        }
+        else
+        {
+            missionCompletePanel.SetActive(false);
+            missionFailPanel.SetActive(true);
         }
     }
 }
