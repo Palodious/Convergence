@@ -247,18 +247,4 @@ public class playerController : MonoBehaviour
         }
     }
 
-
-    // Slide start and stop
-    void startSlide()
-    {
-        isSliding = true;
-        slideTimer = 0;
-        controller.height = crouchHeight;
-    }
-    void stopSlide()
-    {
-        isSliding = false;
-        controller.height = normalHeight;
-    }
-
 }
