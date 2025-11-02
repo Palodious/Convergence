@@ -8,8 +8,8 @@ public class playerController : MonoBehaviour
 
     [SerializeField] int HP;// so player can have health
     [SerializeField] int speed; //to give speed setting for player
-    [SerializeField] int sprintSpeed; //set Player sprint setting
-    [SerializeField] int jumpSpeed; // set jump setting
+    [SerializeField] int sprintMod; //set Player sprint setting
+    [SerializeField] int JumpSpeed; // set jump setting
     [SerializeField] int maxJumps; // set jump count
     [SerializeField] int gravity; // set player gravity
 
@@ -63,6 +63,18 @@ public class playerController : MonoBehaviour
         if (Input.GetButton("Fire1") && shootTimer >= shootRate)
         {
             shoot();
+        }
+    }
+    // sprint function set
+    void sprint()
+    {
+        if (Input.GetButtonDown("Sprint"))
+        {
+            speed *= sprintMod;
+        }
+        else if (Input.GetButtonUp("Sprint"))
+        {
+            speed /= sprintMod;
         }
     }
 }
