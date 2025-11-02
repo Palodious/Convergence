@@ -44,7 +44,7 @@ public class playerController : MonoBehaviour
     Vector3 dodgeDir;
 
     int jumpCount; // for double jumps
-    float shootTimer; // time for rounds before disappearing
+    float shootTimer; 
     float slideTimer;
     float dodgeTimer;
     float dodgeCDTimer;
@@ -55,6 +55,7 @@ public class playerController : MonoBehaviour
     bool isCrouching; // for crouch
     bool isDodging; // for dodge
 
+     
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -235,6 +236,7 @@ public class playerController : MonoBehaviour
     void stopDodge()
     {
         isDodging = false;
+    }
     public void takeDamage(int amount) //take damage
     {
         HP -= amount;
