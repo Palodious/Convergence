@@ -26,14 +26,8 @@ public class enemyAI : MonoBehaviour, IDamage
     float meleeTimer; // used for melee cooldown
 
     // Vision + Triggers
-    [SerializeField] bool useFOV; // lets me turn FOV cone on or off
-    [SerializeField] bool disableSphereForFOV; // turns off sphere trigger if using FOV
-    [SerializeField] float visionRange; // how far enemy can see player
-    [SerializeField] float visionAngle; // how wide the cone is
     bool playerInTrigger;
     bool playerExitTrigger; // used for patrol resume
-    [SerializeField] float loseSightDelay;
-    float loseSightTimer;
 
     // Patrol
     [SerializeField] bool enablePatrol; // toggle patrol on or off
@@ -46,33 +40,26 @@ public class enemyAI : MonoBehaviour, IDamage
 
     Color colorOrig;
 
-    void Start()
+    void Awake()
     {
         colorOrig = model.material.color;
 
         if (enablePatrol && patrolPoints.Length > 0)
             agent.SetDestination(patrolPoints[0].position); // start patrol
-
-        if (useFOV && disableSphereForFOV) // disables trigger if FOV is on
-        {
-            Collider triggerCol = GetComponent<Collider>();
-            if (triggerCol != null)
-                triggerCol.enabled = false;
-        }
     }
 
     void Update()
     {
         shootTimer += Time.deltaTime;
-        meleeTimer += Time.deltaTime;  // keeps melee timing
-        RegenerateShield(); // regen shield if not broken
+        meleeTimer += Time.deltaTime;
+        RegenerateShield();
 
         if (enablePatrol && !playerInTrigger)
         {
             if (agent.remainingDistance < 0.5f)
             {
                 patrolIndex = (patrolIndex + 1) % patrolPoints.Length;
-                agent.SetDestination(patrolPoints[patrolIndex].position); // continue patrol
+                agent.SetDestination(patrolPoints[patrolIndex].position);
             }
         }
 
@@ -92,22 +79,6 @@ public class enemyAI : MonoBehaviour, IDamage
                 shootTimer = 0;
                 shoot();
             }
-
-            // added FOV tracking section
-            if (useFOV)
-            {
-                if (CheckFOV())
-                {
-                    playerInTrigger = true;  // enemy "sees" player
-                    loseSightTimer = 0;      // reset lose sight timer
-                }
-                else
-                {
-                    loseSightTimer += Time.deltaTime;  // count up after losing sight
-                    if (loseSightTimer >= loseSightDelay)
-                        playerInTrigger = false;       // give up chase after delay
-                }
-            }
         }
 
         if (playerExitTrigger && enablePatrol)
@@ -117,40 +88,12 @@ public class enemyAI : MonoBehaviour, IDamage
         }
     }
 
-    // checks if player is inside the cone
-    bool CheckFOV()
-    {
-        Vector3 direction = gamemanager.instance.player.transform.position - transform.position;
-        float angle = Vector3.Angle(transform.forward, direction);
-        return (direction.magnitude <= visionRange && angle <= visionAngle * 0.5f);
-    }
-
-
-    // checks if target stays inside cone
-    bool IsInFOV(Transform target)
-    {
-        Vector3 direction = target.position - transform.position; // direction to player
-        float angle = Vector3.Angle(transform.forward, direction); // check the view angle
-        return (direction.magnitude <= visionRange && angle <= visionAngle * 0.5f); // true if still in cone
-    }
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            if (useFOV)
-            {
-                if (IsInFOV(other.transform))
-                {
-                    playerInTrigger = true;
-                    playerExitTrigger = false;
-                }
-            }
-            else
-            {
-                playerInTrigger = true;
-                playerExitTrigger = false;
-            }
+            playerInTrigger = true;
+            playerExitTrigger = false;
         }
     }
 

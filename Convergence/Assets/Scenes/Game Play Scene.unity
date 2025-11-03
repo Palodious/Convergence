@@ -854,17 +854,13 @@ MonoBehaviour:
   HP: 50
   shieldHP: 50
   shieldRegenRate: 0.25
-  projectile: {fileID: 0}
-  shootPOS: {fileID: 0}
+  projectile: {fileID: 7912181465920922368, guid: b852811fe5168d247a8247d006e52290, type: 3}
+  shootPOS: {fileID: 1702936162}
   meleePOS: {fileID: 0}
   shootRate: 0.25
   shootRange: 10
   meleeRate: 0
   meleeRange: 0
-  useFOV: 1
-  disableSphereForFOV: 1
-  visionRange: 10
-  visionAngle: 10
   enablePatrol: 1
   patrolPoints:
   - {fileID: 1831559784}
@@ -879,11 +875,12 @@ Transform:
   m_GameObject: {fileID: 1510614214}
   serializedVersion: 2
   m_LocalRotation: {x: 0.000000021855694, y: 0, z: -0, w: 1}
-  m_LocalPosition: {x: 1064.4368, y: 42, z: 153.95515}
+  m_LocalPosition: {x: 1064.4368, y: 45.1, z: 153.95515}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 820711771}
+  - {fileID: 1702936162}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &1512618502
@@ -1030,6 +1027,37 @@ NavMeshAgent:
   m_BaseOffset: 1.608327
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!1 &1702936161
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1702936162}
+  m_Layer: 0
+  m_Name: shootPOS
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1702936162
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1702936161}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.000000021855694, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.07, y: 0.93, z: 1.35}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1510848742}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1796428003 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1883505321018338017, guid: a9aa38a017ef101479f8b86520ee79fe, type: 3}
