@@ -15,17 +15,18 @@ public class TriggerZone : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (triggered) return; // Prevent multiple triggers
+        if (triggered) 
+            return; // Prevent multiple triggers
 
         if (other.CompareTag("Player"))
         {
             triggered = true;
 
-            if (isObjectiveTrigger)
+            if (isObjectiveTrigger && Mission.instance != null)
             {
                 Mission.instance.CompleteObjective();
             }
-           
+
             // Optionally disable trigger after activation
             gameObject.SetActive(false);
         }
