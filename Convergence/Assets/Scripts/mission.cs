@@ -1,18 +1,23 @@
+using System;
 using UnityEngine;
-using TMPro;
 
+// Manages the current mission state, tracks objectives,
+// and notifies listeners when objectives are completed or mission ends.
+// Singleton pattern for easy global access.
 public class Mission : MonoBehaviour
 {
     public static Mission instance;
+
     public string missionName;
-    private string missionDescription;
-    public int totalObjectives;
-    private TMP_Text objectivesText;
-    private GameObject missionActiveUI;
-    private GameObject missionCompleteUI;
-    private GameObject missionFailUI;
-    public int objectivesCompleted;
-    public bool missionStarted;
+    public int totalObjectives = 1;
+    public int objectivesCompleted { get; private set; } = 0;
+    public bool missionStarted { get; private set; } = false;
+
+    // Event raised when objective progress changes: (completed, total)
+    public event Action<int, int> OnObjectiveProgressChanged;
+
+    // Event raised when mission completes or fails: true=success, false=failure
+    public event Action<bool> OnMissionCompleted;
 
     private void Awake()
     {
@@ -23,45 +28,29 @@ public class Mission : MonoBehaviour
             Destroy(gameObject);
     }
 
-    private void Start()
-    {
-        UpdateObjectiveUI();
-        missionActiveUI.SetActive(false);
-        missionCompleteUI.SetActive(false);
-        missionFailUI.SetActive(false);
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            StartMission();
-        }
-    }
-
+    // Starts the mission and resets progress.
     public void StartMission()
     {
-        if (missionStarted)
+        if (missionStarted) 
             return;
 
         missionStarted = true;
         objectivesCompleted = 0;
-        missionActiveUI.SetActive(true);
-        missionCompleteUI.SetActive(false);
-        missionFailUI.SetActive(false);
-        UpdateObjectiveUI();
+        OnObjectiveProgressChanged?.Invoke(objectivesCompleted, totalObjectives);
 
         Debug.Log($"Mission '{missionName}' started!");
     }
 
+    // Marks an objective as completed and checks for mission completion.
     public void CompleteObjective()
     {
-        if (!missionStarted)
+        if (!missionStarted) 
             return;
 
         objectivesCompleted++;
-        UpdateObjectiveUI();
-        Debug.Log($"Objective completed! {objectivesCompleted} / {totalObjectives}");
+        OnObjectiveProgressChanged?.Invoke(objectivesCompleted, totalObjectives);
+
+        Debug.Log($"Objective completed: {objectivesCompleted}/{totalObjectives}");
 
         if (objectivesCompleted >= totalObjectives)
         {
@@ -69,31 +58,20 @@ public class Mission : MonoBehaviour
         }
     }
 
-    public void FailMission()
-    {
-        if (!missionStarted)
-            return;
-
-        missionStarted = false;
-        missionActiveUI.SetActive(false);
-        missionFailUI.SetActive(true);
-
-        Debug.Log($"Mission '{missionName}' failed!");
-    }
-
-    private void CompleteMission()
+    // Marks the mission as successfully completed.
+    public void CompleteMission()
     {
         missionStarted = false;
-        missionActiveUI.SetActive(false);
-        missionCompleteUI.SetActive(true);
-
+        OnMissionCompleted?.Invoke(true);
         Debug.Log($"Mission '{missionName}' completed!");
     }
 
-    private void UpdateObjectiveUI()
+    // Marks the mission as failed.
+    public void FailMission()
     {
-        if (objectivesText != null)
-            objectivesText.text = $"Objectives: {objectivesCompleted}/{totalObjectives}";
+        missionStarted = false;
+        OnMissionCompleted?.Invoke(false);
+        Debug.Log($"Mission '{missionName}' failed.");
     }
 }
 

@@ -3,7 +3,7 @@ using System.Collections;
 
 public class damage : MonoBehaviour
 {
-    enum damageType { moving, stationary, DOT, homing }
+    public enum damageType { moving, melee, DOT, homing } // stationary changed to melee
     [SerializeField] damageType type;
     [SerializeField] Rigidbody rb;
 
@@ -14,7 +14,6 @@ public class damage : MonoBehaviour
 
     bool isDamaging;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         if (type == damageType.moving || type == damageType.homing)
@@ -26,9 +25,12 @@ public class damage : MonoBehaviour
                 rb.linearVelocity = transform.forward * speed;
             }
         }
+        else if (type == damageType.melee) // melee is short lived
+        {
+            Destroy(gameObject, 0.2f);
+        }
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (type == damageType.homing)
@@ -47,11 +49,13 @@ public class damage : MonoBehaviour
         {
             dmg.takeDamage(damageAmount);
         }
-        if (type == damageType.moving || type == damageType.homing)
+
+        if (type == damageType.moving || type == damageType.homing || type == damageType.melee)
         {
             Destroy(gameObject);
         }
     }
+
     private void OnTriggerStay(Collider other)
     {
         if (other.isTrigger)
