@@ -32,6 +32,8 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] float visionAngle; // how wide the cone is
     bool playerInTrigger;
     bool playerExitTrigger; // used for patrol resume
+    [SerializeField] float loseSightDelay;
+    float loseSightTimer;
 
     // Patrol
     [SerializeField] bool enablePatrol; // toggle patrol on or off
@@ -91,16 +93,21 @@ public class enemyAI : MonoBehaviour, IDamage
                 shoot();
             }
 
-            if (useFOV && !IsInFOV(gamemanager.instance.player.transform)) // if player leaves FOV, stop
+            // added FOV tracking section
+            if (useFOV)
             {
-                playerInTrigger = false;
-                if (enablePatrol)
-                    agent.SetDestination(patrolPoints[patrolIndex].position);
+                if (CheckFOV())
+                {
+                    playerInTrigger = true;  // enemy "sees" player
+                    loseSightTimer = 0;      // reset lose sight timer
+                }
+                else
+                {
+                    loseSightTimer += Time.deltaTime;  // count up after losing sight
+                    if (loseSightTimer >= loseSightDelay)
+                        playerInTrigger = false;       // give up chase after delay
+                }
             }
-        }
-        else if (useFOV) // checks for player using vision cone
-        {
-            CheckFOV();
         }
 
         if (playerExitTrigger && enablePatrol)
@@ -111,15 +118,13 @@ public class enemyAI : MonoBehaviour, IDamage
     }
 
     // checks if player is inside the cone
-    void CheckFOV()
+    bool CheckFOV()
     {
-        Vector3 direction = gamemanager.instance.player.transform.position - transform.position; // get direction to player
-        float angle = Vector3.Angle(transform.forward, direction); // angle between enemy facing and player
-        if (direction.magnitude <= visionRange && angle <= visionAngle * 0.5f) // inside distance + angle
-        {
-            playerInTrigger = true;
-        }
+        Vector3 direction = gamemanager.instance.player.transform.position - transform.position;
+        float angle = Vector3.Angle(transform.forward, direction);
+        return (direction.magnitude <= visionRange && angle <= visionAngle * 0.5f);
     }
+
 
     // checks if target stays inside cone
     bool IsInFOV(Transform target)
