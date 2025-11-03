@@ -100,7 +100,7 @@ public class gamemanager : MonoBehaviour
         menuActive.SetActive(true);
     }
 
-    public void YouLose()
+    public void youLose()
     {
         OnMissionComplete(false);
     }
