@@ -750,6 +750,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5677459233384743949, guid: a9aa38a017ef101479f8b86520ee79fe, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7672229326492788018, guid: a9aa38a017ef101479f8b86520ee79fe, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8574351906752997784, guid: a9aa38a017ef101479f8b86520ee79fe, type: 3}
       propertyPath: m_Name
       value: Floor
@@ -1110,7 +1118,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1909494056
 Transform:
   m_ObjectHideFlags: 0

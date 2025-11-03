@@ -20,7 +20,8 @@ public class gamemanager : MonoBehaviour
 
     float timeScaleOrig;
 
-    int gameGoalCount;
+    int totalObjectives = 1; 
+    int completedObjectives = 0;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
@@ -68,24 +69,39 @@ public class gamemanager : MonoBehaviour
         menuActive = null;
     }
 
-    public void updateGameGoal(int amount)
+    public void RegisterObjectiveComplete()
     {
-        gameGoalCount += amount;
-        gameGoalCountText.text = gameGoalCount.ToString("F0");
+        completedObjectives++;
+        UpdateGoalUI();
 
-        if (gameGoalCount <= 0)
+        if (completedObjectives >= totalObjectives)
         {
-            // You win!!!
-            statePause();
-            menuActive = menuWin;
-            menuActive.SetActive(true);
+            OnMissionComplete(true);
         }
     }
 
-    public void youLose()
+    void UpdateGoalUI()
+    {
+        gameGoalCountText.text = $"{completedObjectives} / {totalObjectives}";
+    }
+
+    void OnMissionComplete(bool success)
     {
         statePause();
-        menuActive = menuLose;
+
+        if (success)
+        {
+            menuActive = menuWin;
+        }
+        else
+        {
+            menuActive = menuLose;
+        }
         menuActive.SetActive(true);
+    }
+
+    public void YouLose()
+    {
+        OnMissionComplete(false);
     }
 }

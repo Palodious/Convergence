@@ -23,14 +23,9 @@ public class TriggerZone : MonoBehaviour
 
             if (isObjectiveTrigger)
             {
-                Debug.Log($"Player entered trigger: {triggerName}. Completing objective.");
                 Mission.instance.CompleteObjective();
             }
-            else
-            {
-                Debug.Log($"Player entered trigger: {triggerName}. No objective completion.");
-            }
-
+           
             // Optionally disable trigger after activation
             gameObject.SetActive(false);
         }
