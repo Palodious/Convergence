@@ -5,49 +5,147 @@ using UnityEngine.AI;
 public class enemyAI : MonoBehaviour, IDamage
 {
     [SerializeField] NavMeshAgent agent;
-
-    [SerializeField] int HP;
-
-    [SerializeField] GameObject bullet;
-    [SerializeField] float shootRate;
-    [SerializeField] Transform shootPOS;
-
     [SerializeField] Renderer model;
+
+    // HP and Shield
+    [SerializeField] int HP;
+    [SerializeField] int shieldHP;  // shield points
+    [SerializeField] float shieldRegenRate; // how fast the shield regens
+    bool shieldBroken;  // used to stop regen when gone
+    bool shieldActive; // stops flashing multiple times
+
+    // Attacks
+    [SerializeField] GameObject projectile; // projectile replaces bullet
+    [SerializeField] Transform shootPOS;
+    [SerializeField] Transform meleePOS; // melee spawn position
+    [SerializeField] float shootRate;
+    [SerializeField] float shootRange;  // how far enemy can shoot
+    [SerializeField] float meleeRate; // time between melee swings
+    [SerializeField] float meleeRange; // distance to hit with melee
+    float shootTimer;
+    float meleeTimer; // used for melee cooldown
+
+    // Vision + Triggers
+    [SerializeField] bool useFOV; // lets me turn FOV cone on or off
+    [SerializeField] bool disableSphereForFOV; // turns off sphere trigger if using FOV
+    [SerializeField] float visionRange; // how far enemy can see player
+    [SerializeField] float visionAngle; // how wide the cone is
+    bool playerInTrigger;
+    bool playerExitTrigger; // used for patrol resume
+
+    // Patrol
+    [SerializeField] bool enablePatrol; // toggle patrol on or off
+    [SerializeField] Transform[] patrolPoints; // patrol points
+    int patrolIndex; // keeps track of where enemy goes next
+
+    // Difficulty Select
+    public enum EnemyDifficulty { Normal, Hard, Elite, Boss }  // lets me pick in inspector
+    public EnemyDifficulty difficulty;
 
     Color colorOrig;
 
-    bool playerInTrigger;
-
-    float shootTimer;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         colorOrig = model.material.color;
-        gamemanager.instance.updateGameGoal(1);
+
+        if (enablePatrol && patrolPoints.Length > 0)
+            agent.SetDestination(patrolPoints[0].position); // start patrol
+
+        if (useFOV && disableSphereForFOV) // disables trigger if FOV is on
+        {
+            Collider triggerCol = GetComponent<Collider>();
+            if (triggerCol != null)
+                triggerCol.enabled = false;
+        }
     }
 
-    // Update is called once per frame
     void Update()
     {
         shootTimer += Time.deltaTime;
+        meleeTimer += Time.deltaTime;  // keeps melee timing
+        RegenerateShield(); // regen shield if not broken
+
+        if (enablePatrol && !playerInTrigger)
+        {
+            if (agent.remainingDistance < 0.5f)
+            {
+                patrolIndex = (patrolIndex + 1) % patrolPoints.Length;
+                agent.SetDestination(patrolPoints[patrolIndex].position); // continue patrol
+            }
+        }
 
         if (playerInTrigger)
         {
-            agent.SetDestination(gamemanager.instance.player.transform.position);
+            agent.SetDestination(gamemanager.instance.player.transform.position); // chase player
 
-            if (shootTimer >= shootRate)
+            float distance = Vector3.Distance(transform.position, gamemanager.instance.player.transform.position);
+
+            if (distance <= meleeRange && meleeTimer >= meleeRate) // checks for melee
             {
+                meleeTimer = 0;
+                melee();
+            }
+            else if (distance <= shootRange && shootTimer >= shootRate) // checks for shooting
+            {
+                shootTimer = 0;
                 shoot();
             }
+
+            if (useFOV && !IsInFOV(gamemanager.instance.player.transform)) // if player leaves FOV, stop
+            {
+                playerInTrigger = false;
+                if (enablePatrol)
+                    agent.SetDestination(patrolPoints[patrolIndex].position);
+            }
         }
+        else if (useFOV) // checks for player using vision cone
+        {
+            CheckFOV();
+        }
+
+        if (playerExitTrigger && enablePatrol)
+        {
+            playerExitTrigger = false;
+            agent.SetDestination(patrolPoints[patrolIndex].position); // resume patrol
+        }
+    }
+
+    // checks if player is inside the cone
+    void CheckFOV()
+    {
+        Vector3 direction = gamemanager.instance.player.transform.position - transform.position; // get direction to player
+        float angle = Vector3.Angle(transform.forward, direction); // angle between enemy facing and player
+        if (direction.magnitude <= visionRange && angle <= visionAngle * 0.5f) // inside distance + angle
+        {
+            playerInTrigger = true;
+        }
+    }
+
+    // checks if target stays inside cone
+    bool IsInFOV(Transform target)
+    {
+        Vector3 direction = target.position - transform.position; // direction to player
+        float angle = Vector3.Angle(transform.forward, direction); // check the view angle
+        return (direction.magnitude <= visionRange && angle <= visionAngle * 0.5f); // true if still in cone
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            playerInTrigger = true;
+            if (useFOV)
+            {
+                if (IsInFOV(other.transform))
+                {
+                    playerInTrigger = true;
+                    playerExitTrigger = false;
+                }
+            }
+            else
+            {
+                playerInTrigger = true;
+                playerExitTrigger = false;
+            }
         }
     }
 
@@ -56,22 +154,59 @@ public class enemyAI : MonoBehaviour, IDamage
         if (other.CompareTag("Player"))
         {
             playerInTrigger = false;
+            playerExitTrigger = true;
         }
     }
 
     public void takeDamage(int amount)
     {
+        if (shieldHP > 0)
+        {
+            shieldHP -= amount;
+            if (!shieldActive) StartCoroutine(FlashShield()); // flash cyan
+
+            if (shieldHP <= 0)
+            {
+                shieldBroken = true;
+                StartCoroutine(FlashShieldBreak()); // flash white when shield breaks
+            }
+            return;
+        }
+
         HP -= amount;
 
         if (HP <= 0)
         {
-            gamemanager.instance.updateGameGoal(-1);
             Destroy(gameObject);
         }
         else
         {
             StartCoroutine(flashRed());
         }
+    }
+
+    void RegenerateShield()
+    {
+        if (shieldBroken && shieldHP <= 0)
+            return;
+
+        shieldHP += Mathf.RoundToInt(shieldRegenRate * Time.deltaTime);
+    }
+
+    IEnumerator FlashShield()
+    {
+        shieldActive = true;
+        model.material.color = Color.cyan;
+        yield return new WaitForSeconds(0.1f);
+        model.material.color = colorOrig;
+        shieldActive = false;
+    }
+
+    IEnumerator FlashShieldBreak()
+    {
+        model.material.color = Color.white;
+        yield return new WaitForSeconds(0.2f);
+        model.material.color = colorOrig;
     }
 
     IEnumerator flashRed()
@@ -83,7 +218,11 @@ public class enemyAI : MonoBehaviour, IDamage
 
     void shoot()
     {
-        shootTimer = 0;
-        Instantiate(bullet, shootPOS.position, transform.rotation);
+        Instantiate(projectile, shootPOS.position, transform.rotation); // spawn projectile
+    }
+
+    void melee()
+    {
+        Instantiate(projectile, meleePOS.position, transform.rotation); // spawn melee hit
     }
 }
