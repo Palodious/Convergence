@@ -148,7 +148,7 @@ public class enemyAI : MonoBehaviour, IDamage
     IEnumerator FlashShield()
     {
         shieldActive = true;
-        model.material.color = Color.cyan;
+        model.material.color = Color.yellow;
         yield return new WaitForSeconds(0.1f);
         model.material.color = colorOrig;
         shieldActive = false;
