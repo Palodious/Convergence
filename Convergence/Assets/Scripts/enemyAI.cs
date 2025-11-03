@@ -25,7 +25,7 @@ public class enemyAI : MonoBehaviour, IDamage
     float shootTimer;
     float meleeTimer; // used for melee cooldown
 
-    // Vision + Triggers
+    // Trigger + Detection
     bool playerInTrigger;
     bool playerExitTrigger; // used for patrol resume
 
@@ -52,8 +52,9 @@ public class enemyAI : MonoBehaviour, IDamage
     {
         shootTimer += Time.deltaTime;
         meleeTimer += Time.deltaTime;
-        RegenerateShield();
+        RegenerateShield(); // shield regen if not broken
 
+        // patrol logic if no player in range
         if (enablePatrol && !playerInTrigger)
         {
             if (agent.remainingDistance < 0.5f)
@@ -61,23 +62,26 @@ public class enemyAI : MonoBehaviour, IDamage
                 patrolIndex = (patrolIndex + 1) % patrolPoints.Length;
                 agent.SetDestination(patrolPoints[patrolIndex].position);
             }
+            return; // stop here so patrol doesn’t mix with chase
         }
 
+        // chase + attack
         if (playerInTrigger)
         {
-            agent.SetDestination(gamemanager.instance.player.transform.position); // chase player
+            Transform player = gamemanager.instance.player.transform;
+            agent.SetDestination(player.position);
 
-            float distance = Vector3.Distance(transform.position, gamemanager.instance.player.transform.position);
+            float distance = Vector3.Distance(transform.position, player.position);
 
-            if (distance <= meleeRange && meleeTimer >= meleeRate) // checks for melee
+            if (distance <= meleeRange && meleeTimer >= meleeRate)
             {
                 meleeTimer = 0;
-                melee();
+                melee(); // melee attack
             }
-            else if (distance <= shootRange && shootTimer >= shootRate) // checks for shooting
+            else if (distance <= shootRange && shootTimer >= shootRate)
             {
                 shootTimer = 0;
-                shoot();
+                shoot(); // shoot attack
             }
         }
 
@@ -93,7 +97,7 @@ public class enemyAI : MonoBehaviour, IDamage
         if (other.CompareTag("Player"))
         {
             playerInTrigger = true;
-            playerExitTrigger = false;
+            playerExitTrigger = false; // start chasing again
         }
     }
 
@@ -102,7 +106,7 @@ public class enemyAI : MonoBehaviour, IDamage
         if (other.CompareTag("Player"))
         {
             playerInTrigger = false;
-            playerExitTrigger = true;
+            playerExitTrigger = true; // resume patrol when player leaves
         }
     }
 

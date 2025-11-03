@@ -3,7 +3,7 @@ using System.Collections;
 
 public class damage : MonoBehaviour
 {
-    enum damageType { moving, melee, DOT, homing } // stationary changed to melee
+    public enum damageType { moving, melee, DOT, homing } // stationary changed to melee
     [SerializeField] damageType type;
     [SerializeField] Rigidbody rb;
 
