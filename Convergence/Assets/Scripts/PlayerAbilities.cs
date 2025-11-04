@@ -49,7 +49,7 @@ public class playerAbilities : MonoBehaviour
         if (controller == null)
             controller = GetComponent<playerController>();
 
-        originalSpeed = controller.GetComponent<playerController>().speed;
+        originalSpeed = controller.GetComponent<playerController>().Speed;
     }
 
     void Update()
@@ -94,7 +94,7 @@ public class playerAbilities : MonoBehaviour
         isSurging = true;
         surgeEndTime = Time.time + surgeDuration;
 
-        controller.speed = originalSpeed * surgeSpeedBoost;
+        controller.Speed = originalSpeed * surgeSpeedBoost;
         controller.damageBoost = surgeDamageBoost;
 
         yield return new WaitForSeconds(surgeDuration);
@@ -104,7 +104,7 @@ public class playerAbilities : MonoBehaviour
     void EndSurge()
     {
         isSurging = false;
-        controller.speed = originalSpeed;
+        controller.Speed = originalSpeed;
         controller.damageBoost = originalDamageBoost;
     }
 
