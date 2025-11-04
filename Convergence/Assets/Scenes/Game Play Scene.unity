@@ -1613,21 +1613,9 @@ MonoBehaviour:
   shootDamage: 5
   shootDist: 30
   shootRate: 0.5
-  slideDuration: 1
-  slideSpeed: 12
-  wallRunSpeed: 7
-  wallRunGravity: 5
-  wallCheckDist: 1
-  wallMask:
-    serializedVersion: 2
-    m_Bits: 0
-  glideGravityScale: 0.3
-  crouchHeight: 1
-  normalHeight: 2
-  crouchSpeedMod: 0.5
-  dodgeSpeed: 15
-  dodgeDuration: 0.25
-  dodgeCooldown: 1
+  maxAmmo: 0
+  ammo: 0
+  damageBoost: 1
 --- !u!143 &752554656
 CharacterController:
   m_ObjectHideFlags: 0
@@ -4479,7 +4467,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1909494056
 Transform:
   m_ObjectHideFlags: 0
