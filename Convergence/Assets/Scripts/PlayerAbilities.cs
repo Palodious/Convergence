@@ -1,0 +1,212 @@
+using UnityEngine;
+using System.Collections;
+
+public class PlayerAbilities : MonoBehaviour
+{
+    [SerializeField] playerController controller;
+    [SerializeField] int pulseDamage;
+    [SerializeField] float pulseRadius;
+    [SerializeField] float pulseForce;
+    [SerializeField] float pulseCooldown;
+    [SerializeField] int pulseFlowCost;
+    [SerializeField] GameObject pulseEffect;
+
+    [SerializeField] int surgeFlowCost;
+    [SerializeField] float surgeCooldown;
+    [SerializeField] float surgeDuration;
+    [SerializeField] float surgeSpeedBoost;
+    [SerializeField] float surgeDamageBoost;
+    [SerializeField] GameObject surgeEffect;
+
+    [SerializeField] int collapseDamage;
+    [SerializeField] float collapseRadius;
+    [SerializeField] float collapseCooldown;
+    [SerializeField] int collapseFlowCost;
+    [SerializeField] float collapseSlowMoScale;
+    [SerializeField] float collapseSlowMoTime;
+    [SerializeField] GameObject collapseEffect;
+
+    [SerializeField] float teleportDistance;
+    [SerializeField] float teleportCooldown;
+    [SerializeField] float teleportFlowCost;
+    [SerializeField] float teleportDuration;
+    [SerializeField] ParticleSystem teleportEffect;
+    [SerializeField] AudioClip teleportSound;
+
+    bool canPulse = true;
+    bool canSurge = true;
+    bool canCollapse = true;
+    bool isSurging = false;
+
+    float surgeTimer;
+    float surgeEndTime;
+    float originalSpeed;
+    int originalDamage;
+
+    private float cooldownTimer;
+    private bool isOnCooldown = false;
+    private AudioSource audioSource;
+    private CharacterController charController;
+    private Rigidbody rb;
+    private bool useCharacterController = true;
+
+    private void Awake()
+    {
+        audioSource = GetComponent<AudioSource>();
+        controller = GetComponent<playerController>() ?? gameObject.AddComponent<playerController>();
+        charController = GetComponent<CharacterController>();
+        rb = GetComponent<Rigidbody>();
+        useCharacterController = charController != null;
+    }
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        if (controller == null)
+        {
+         
+        }
+
+        originalSpeed = controller != null ? controller.speed : 0;
+        originalDamage = controller != null ? controller.shootDamage : 0;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (Input.GetButtonDown("Ability1") && canPulse)
+            StartCoroutine(RiftPulse());
+
+        if (Input.GetButtonDown("Ability2") && canSurge)
+            StartCoroutine(RiftSurge());
+
+        if (Input.GetButtonDown("Ability3") && canCollapse)
+            StartCoroutine(RiftCollapse());
+
+        if (isSurging)
+        {
+            surgeTimer += Time.deltaTime;
+            if (surgeTimer >= surgeEndTime)
+                EndSurge();
+        }
+
+        if (Input.GetButtonDown("Teleport") // Or configurable key
+        {
+            TryActivateTeleport();
+        }
+
+
+        HandleCooldown();
+        HandleInput();
+    }
+
+    private void HandleCooldown()
+    {
+        if (cooldownTimer > 0)
+        {
+            cooldownTimer -= Time.deltaTime;
+            if (cooldownTimer <= 0)
+            {
+                isOnCooldown = false;
+                cooldownTimer = 0f;
+                // could trigger an event or UI update
+            }
+        }
+    }
+    private bool IsReady()
+    {
+        return !isOnCooldown && HasEnoughFlow();
+    }
+
+    private void StartCooldown()
+    {
+        isOnCooldown = true;
+        cooldownTimer = teleportCooldown;
+    }
+
+
+
+    IEnumerator RiftPulse()
+    {
+        canPulse = false;
+
+        if (pulseEffect != null)
+            Instantiate(pulseEffect, transform.position, Quaternion.identity);
+
+        Collider[] hits = Physics.OverlapSphere(transform.position, pulseRadius);
+        foreach (Collider hit in hits)
+        {
+            if (hit.CompareTag("Enemy"))
+            {
+                IDamage dmg = hit.GetComponent<IDamage>();
+                if (dmg != null)
+                    dmg.takeDamage(pulseDamage);
+
+                Rigidbody rb = hit.GetComponent<Rigidbody>();
+                if (rb != null)
+                    rb.AddExplosionForce(pulseForce, transform.position, pulseRadius);
+            }
+        }
+
+        yield return new WaitForSeconds(pulseCooldown);
+        canPulse = true;
+    }
+
+    IEnumerator RiftSurge()
+    {
+        canSurge = false;
+        isSurging = true;
+        surgeTimer = 0;
+        surgeEndTime = surgeDuration;
+
+        if (surgeEffect != null)
+            Instantiate(surgeEffect, transform.position, Quaternion.identity);
+
+        if (controller != null)
+        {
+            controller.speed = Mathf.RoundToInt(controller.speed * surgeSpeedBoost);
+            controller.shootDamage = Mathf.RoundToInt(controller.shootDamage * surgeDamageBoost);
+        }
+
+        yield return new WaitForSeconds(surgeCooldown);
+        canSurge = true;
+    }
+    void EndSurge()
+    {
+        isSurging = false;
+
+        if (controller != null)
+        {
+            controller.speed = originalSpeed;
+            controller.shootDamage = originalDamage;
+        }
+    }
+
+    IEnumerator RiftCollapse()
+    {
+        canCollapse = false;
+
+        if (collapseEffect != null)
+            Instantiate(collapseEffect, transform.position, Quaternion.identity);
+
+        Collider[] hits = Physics.OverlapSphere(transform.position, collapseRadius);
+        foreach (Collider hit in hits)
+        {
+            if (hit.CompareTag("Enemy"))
+            {
+                IDamage dmg = hit.GetComponent<IDamage>();
+                if (dmg != null)
+                    dmg.takeDamage(collapseDamage);
+            }
+        }
+
+        Time.timeScale = collapseSlowMoScale;
+        yield return new WaitForSecondsRealtime(collapseSlowMoTime);
+        Time.timeScale = 1f;
+
+        yield return new WaitForSeconds(collapseCooldown);
+        canCollapse = true;
+    }
+
+
+}
