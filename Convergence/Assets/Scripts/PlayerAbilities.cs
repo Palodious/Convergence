@@ -40,14 +40,17 @@ public class playerAbilities : MonoBehaviour
     float originalSpeed;
     float originalDamageBoost = 1f;
 
+    // Start is called before the first frame update
     void Start()
     {
         if (controller == null)
             controller = GetComponent<playerController>();
 
-        originalSpeed = playerController.controller.speed;
+        // Corrected: access through property instead of private variable
+        originalSpeed = controller.Speed;
     }
 
+    // Update is called once per frame
     void Update()
     {
         pulseTimer += Time.deltaTime;
@@ -92,7 +95,8 @@ public class playerAbilities : MonoBehaviour
         isSurging = true;
         surgeEndTime = Time.time + surgeDuration;
 
-        controller.speed = originalSpeed * surgeSpeedBoost;
+        // Corrected: Use Speed property and added damageBoost field
+        controller.Speed = originalSpeed * surgeSpeedBoost;
         controller.damageBoost = surgeDamageBoost;
 
         yield return new WaitForSeconds(surgeDuration);
@@ -102,7 +106,7 @@ public class playerAbilities : MonoBehaviour
     void EndSurge()
     {
         isSurging = false;
-        controller.speed = originalSpeed;
+        controller.Speed = originalSpeed;
         controller.damageBoost = originalDamageBoost;
     }
 
@@ -133,8 +137,9 @@ public class playerAbilities : MonoBehaviour
         if (Physics.Raycast(transform.position, transform.forward, out hit, jumpDistance))
             targetPos = hit.point - transform.forward * 1f;
 
-        controller.GetComponent<CharacterController>().enabled = false;
+        // Corrected: use Controller property instead of private field
+        controller.Controller.enabled = false;
         transform.position = targetPos;
-        controller.GetComponent<CharacterController>().enabled = true;
+        controller.Controller.enabled = true;
     }
 }

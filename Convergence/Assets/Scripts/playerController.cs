@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using UnityEngine;
 
 public class playerController : MonoBehaviour, IDamage
@@ -7,18 +6,21 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] LayerMask ignoreLayer;
 
     [SerializeField] int HP;
-    [SerializeField] int speed;
+    [SerializeField] float speed;
     [SerializeField] int sprintMod;
-    [SerializeField] int JumpSpeed;
+    [SerializeField] float JumpSpeed;
     [SerializeField] int maxJumps;
-    [SerializeField] int gravity;
+    [SerializeField] float gravity;
 
     [SerializeField] int shootDamage;
-    [SerializeField] int shootDist;
+    [SerializeField] float shootDist;
     [SerializeField] float shootRate;
 
     [SerializeField] int maxAmmo;
     [SerializeField] int ammo;
+
+    // --- Added for Abilities ---
+    [HideInInspector] public float damageBoost = 1f; // Used by playerAbilities for temporary damage increase
 
     Vector3 moveDir;
     Vector3 playerVel;
@@ -26,6 +28,20 @@ public class playerController : MonoBehaviour, IDamage
     int jumpCount;
 
     float shootTimer;
+
+    // --- Added Properties for Cross-Script Access ---
+    public CharacterController Controller => controller; // Allows external access to CharacterController
+    public float Speed
+    {
+        get => speed;
+        set => speed = value;
+    }
+
+    public int HPValue
+    {
+        get => HP;
+        set => HP = value;
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -100,7 +116,7 @@ public class playerController : MonoBehaviour, IDamage
             IDamage dmg = hit.collider.GetComponent<IDamage>();
             if (dmg != null)
             {
-                dmg.takeDamage(shootDamage);
+                dmg.takeDamage((int)(shootDamage * damageBoost)); // Apply boosted damage during surge
             }
         }
     }
@@ -111,8 +127,6 @@ public class playerController : MonoBehaviour, IDamage
         if (ammo > maxAmmo)
             ammo = maxAmmo;
     }
-
-
 
     public void takeDamage(int amount)
     {
