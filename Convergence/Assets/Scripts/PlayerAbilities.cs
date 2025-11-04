@@ -6,27 +6,31 @@ public class playerAbilities : MonoBehaviour
     [SerializeField] playerController controller;
     [SerializeField] LayerMask enemyMask;
 
-    // Rift Pulse (Q)
+    // Rift Pulse
     [SerializeField] int pulseDamage;
     [SerializeField] float pulseRange;
     [SerializeField] float pulseCooldown;
+    [SerializeField] int pulseFlowCost;
 
-    // Rift Surge (E)
+    // Rift Surge
     [SerializeField] float surgeDuration;
     [SerializeField] float surgeSpeedBoost;
     [SerializeField] float surgeDamageBoost;
     [SerializeField] float surgeCooldown;
+    [SerializeField] int surgeFlowCost;
 
-    // Rift Collapse (R)
+    // Rift Collapse
     [SerializeField] int collapseDamage;
     [SerializeField] float collapseRadius;
     [SerializeField] float collapseCooldown;
+    [SerializeField] int collapseFlowCost;
     [SerializeField] float collapseSlowTime;
     [SerializeField] float collapseSlowScale;
 
-    // Rift Jump (F)
+    // Rift Jump
     [SerializeField] float jumpDistance;
     [SerializeField] float jumpCooldown;
+    [SerializeField] int jumpFlowCost;
 
     // Timers
     float pulseTimer;
@@ -40,17 +44,14 @@ public class playerAbilities : MonoBehaviour
     float originalSpeed;
     float originalDamageBoost = 1f;
 
-    // Start is called before the first frame update
     void Start()
     {
         if (controller == null)
             controller = GetComponent<playerController>();
 
-        // Corrected: access through property instead of private variable
-        originalSpeed = controller.Speed;
+        originalSpeed = controller.GetComponent<playerController>().speed;
     }
 
-    // Update is called once per frame
     void Update()
     {
         pulseTimer += Time.deltaTime;
@@ -74,7 +75,6 @@ public class playerAbilities : MonoBehaviour
             EndSurge();
     }
 
-    // Q – short-range burst
     IEnumerator RiftPulse()
     {
         pulseTimer = 0;
@@ -88,15 +88,13 @@ public class playerAbilities : MonoBehaviour
         yield return null;
     }
 
-    // E – temporary boost
     IEnumerator RiftSurge()
     {
         surgeTimer = 0;
         isSurging = true;
         surgeEndTime = Time.time + surgeDuration;
 
-        // Corrected: Use Speed property and added damageBoost field
-        controller.Speed = originalSpeed * surgeSpeedBoost;
+        controller.speed = originalSpeed * surgeSpeedBoost;
         controller.damageBoost = surgeDamageBoost;
 
         yield return new WaitForSeconds(surgeDuration);
@@ -106,11 +104,10 @@ public class playerAbilities : MonoBehaviour
     void EndSurge()
     {
         isSurging = false;
-        controller.Speed = originalSpeed;
+        controller.speed = originalSpeed;
         controller.damageBoost = originalDamageBoost;
     }
 
-    // R – heavy AoE + slow-mo
     IEnumerator RiftCollapse()
     {
         collapseTimer = 0;
@@ -127,7 +124,6 @@ public class playerAbilities : MonoBehaviour
         Time.timeScale = 1f;
     }
 
-    // F – teleport forward
     void RiftJump()
     {
         jumpTimer = 0;
@@ -135,11 +131,13 @@ public class playerAbilities : MonoBehaviour
         Vector3 targetPos = transform.position + transform.forward * jumpDistance;
 
         if (Physics.Raycast(transform.position, transform.forward, out hit, jumpDistance))
+        {
             targetPos = hit.point - transform.forward * 1f;
+        }
 
-        // Corrected: use Controller property instead of private field
-        controller.Controller.enabled = false;
+        controller.GetComponent<CharacterController>().enabled = false;
         transform.position = targetPos;
-        controller.Controller.enabled = true;
+        controller.GetComponent<CharacterController>().enabled = true;
     }
 }
+
