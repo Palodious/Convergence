@@ -1606,8 +1606,8 @@ MonoBehaviour:
     m_Bits: 0
   HP: 15
   maxHP: 100
-  ammo: 0
-  maxAmmo: 0
+  ammo: 30
+  maxAmmo: 100
   speed: 5
   sprintMod: 3
   JumpSpeed: 12
@@ -2209,7 +2209,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 75df763c6bbbf9943a6647ab45d9b11f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

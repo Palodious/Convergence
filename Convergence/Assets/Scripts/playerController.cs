@@ -5,7 +5,7 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] CharacterController controller;
     [SerializeField] LayerMask ignoreLayer;
 
-    [SerializeField] int HP;
+    [SerializeField] int HP = 50;
     [SerializeField] int maxHP = 100;
     [SerializeField] int ammo = 30;
     [SerializeField] int maxAmmo = 100;
