@@ -31,7 +31,7 @@ public class Mission : MonoBehaviour
     // Starts the mission and resets progress.
     public void StartMission()
     {
-        if (missionStarted) 
+        if (missionStarted)
             return;
 
         missionStarted = true;
@@ -42,15 +42,23 @@ public class Mission : MonoBehaviour
     // Marks an objective as completed and checks for mission completion.
     public void CompleteObjective()
     {
-        if (!missionStarted) 
+        CompleteObjective("Unnamed Objective");
+    }
+
+    // Marks a named objective as completed and logs it for clarity.
+    public void CompleteObjective(string objectiveName)
+    {
+        if (!missionStarted)
             return;
 
         objectivesCompleted++;
+
+        Debug.Log($"Objective Completed: {objectiveName} ({objectivesCompleted}/{totalObjectives})");
+
         OnObjectiveProgressChanged?.Invoke(objectivesCompleted, totalObjectives);
 
         if (objectivesCompleted >= totalObjectives)
             CompleteMission();
-        
     }
 
     // Marks the mission as successfully completed.
@@ -67,4 +75,3 @@ public class Mission : MonoBehaviour
         OnMissionCompleted?.Invoke(false);
     }
 }
-
