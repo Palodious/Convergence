@@ -1607,12 +1607,12 @@ MonoBehaviour:
   HP: 15
   speed: 5
   sprintMod: 3
-  JumpSpeed: 0
+  JumpSpeed: 12
   maxJumps: 1
-  gravity: 12
-  shootDamage: 0
-  shootDist: 0
-  shootRate: 0
+  gravity: 32
+  shootDamage: 5
+  shootDist: 30
+  shootRate: 0.5
   slideDuration: 1
   slideSpeed: 12
   wallRunSpeed: 7
