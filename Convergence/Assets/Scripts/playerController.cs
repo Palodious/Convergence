@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using UnityEngine;
 
 public class playerController : MonoBehaviour
@@ -12,6 +13,8 @@ public class playerController : MonoBehaviour
     [SerializeField] int JumpSpeed; // set jump setting
     [SerializeField] int maxJumps; // set jump count
     [SerializeField] int gravity; // set player gravity
+    [SerializeField] int ammo; // set player ammo 
+    [SerializeField] int maxAmmo; // set player max ammo 
 
     [SerializeField] int shootDamage; //damage output
     [SerializeField] int shootDist; // damage dealt distance
@@ -176,6 +179,14 @@ public class playerController : MonoBehaviour
             }
         }
     }
+
+    public void addAmmo(int value)
+    {
+        ammo += value;
+        if (ammo > maxAmmo)
+            ammo = maxAmmo; 
+    }
+
     // Slide start and stop
     void startSlide()
     {
