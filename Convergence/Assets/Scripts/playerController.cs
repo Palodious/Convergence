@@ -17,6 +17,8 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] int shootDist;
     [SerializeField] float shootRate;
 
+    [SerializeField] int maxAmmo;
+    [SerializeField] int ammo;
 
     Vector3 moveDir;
     Vector3 playerVel;
@@ -102,6 +104,15 @@ public class playerController : MonoBehaviour, IDamage
             }
         }
     }
+
+    public void addAmmo(int value)
+    {
+        ammo += value;
+        if (ammo > maxAmmo)
+            ammo = maxAmmo;
+    }
+
+
 
     public void takeDamage(int amount)
     {
