@@ -5,12 +5,24 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] CharacterController controller;
     [SerializeField] LayerMask ignoreLayer;
 
+<<<<<<< Updated upstream
     [SerializeField] int HP;
     [SerializeField] float speed;
     [SerializeField] int sprintMod;
     [SerializeField] float JumpSpeed;
     [SerializeField] int maxJumps;
     [SerializeField] float gravity;
+=======
+    [SerializeField] int HP;// so player can have health
+    [SerializeField] int maxHP = 100; // Sets players max health 
+    [SerializeField] int ammo = 30; // Sets players ammo 
+    [SerializeField] int maxAmmo = 100; // Sets players max ammo 
+    [SerializeField] int speed; //to give speed setting for player
+    [SerializeField] int sprintMod; //set Player sprint setting
+    [SerializeField] int JumpSpeed; // set jump setting
+    [SerializeField] int maxJumps; // set jump count
+    [SerializeField] int gravity; // set player gravity
+>>>>>>> Stashed changes
 
     [SerializeField] int shootDamage;
     [SerializeField] float shootDist;
@@ -121,7 +133,22 @@ public class playerController : MonoBehaviour, IDamage
         }
     }
 
+<<<<<<< Updated upstream
     public void addAmmo(int value)
+=======
+    // Ammo function 
+    public void addAmmo(int value)
+    {
+        ammo += value; 
+        if(ammo > maxAmmo)
+        {
+            ammo = maxAmmo; 
+        }
+    }
+
+    // Slide start and stop
+    void startSlide()
+>>>>>>> Stashed changes
     {
         ammo += value;
         if (ammo > maxAmmo)
