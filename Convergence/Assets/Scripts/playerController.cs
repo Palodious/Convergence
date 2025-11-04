@@ -5,63 +5,33 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] CharacterController controller;
     [SerializeField] LayerMask ignoreLayer;
 
-<<<<<<< Updated upstream
     [SerializeField] int HP;
-    [SerializeField] float speed;
-    [SerializeField] int sprintMod;
-    [SerializeField] float JumpSpeed;
-    [SerializeField] int maxJumps;
-    [SerializeField] float gravity;
-=======
-    [SerializeField] int HP;// so player can have health
-    [SerializeField] int maxHP = 100; // Sets players max health 
-    [SerializeField] int ammo = 30; // Sets players ammo 
-    [SerializeField] int maxAmmo = 100; // Sets players max ammo 
-    [SerializeField] int speed; //to give speed setting for player
-    [SerializeField] int sprintMod; //set Player sprint setting
-    [SerializeField] int JumpSpeed; // set jump setting
-    [SerializeField] int maxJumps; // set jump count
-    [SerializeField] int gravity; // set player gravity
->>>>>>> Stashed changes
+    [SerializeField] int maxHP = 100;
+    [SerializeField] int ammo = 30;
+    [SerializeField] int maxAmmo = 100;
+    [SerializeField] float speed = 5f;
+    [SerializeField] int sprintMod = 2;
+    [SerializeField] float JumpSpeed = 8f;
+    [SerializeField] int maxJumps = 2;
+    [SerializeField] float gravity = 9.81f;
 
-    [SerializeField] int shootDamage;
-    [SerializeField] float shootDist;
-    [SerializeField] float shootRate;
-
-    [SerializeField] int maxAmmo;
-    [SerializeField] int ammo;
+    [SerializeField] int shootDamage = 10;
+    [SerializeField] float shootDist = 50f;
+    [SerializeField] float shootRate = 0.5f;
 
     // --- Added for Abilities ---
-    [HideInInspector] public float damageBoost = 1f; // Used by playerAbilities for temporary damage increase
+    [HideInInspector] public float damageBoost = 1f;
 
     Vector3 moveDir;
     Vector3 playerVel;
-
     int jumpCount;
-
     float shootTimer;
 
-    // --- Added Properties for Cross-Script Access ---
-    public CharacterController Controller => controller; // Allows external access to CharacterController
-    public float Speed
-    {
-        get => speed;
-        set => speed = value;
-    }
+    // --- Properties ---
+    public CharacterController Controller => controller;
+    public float Speed { get => speed; set => speed = value; }
+    public int HPValue { get => HP; set => HP = value; }
 
-    public int HPValue
-    {
-        get => HP;
-        set => HP = value;
-    }
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
     void Update()
     {
         Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
@@ -83,6 +53,7 @@ public class playerController : MonoBehaviour, IDamage
         {
             playerVel.y -= gravity * Time.deltaTime;
         }
+
         moveDir = Input.GetAxis("Horizontal") * transform.right + Input.GetAxis("Vertical") * transform.forward;
         controller.Move(moveDir * speed * Time.deltaTime);
 
@@ -128,27 +99,12 @@ public class playerController : MonoBehaviour, IDamage
             IDamage dmg = hit.collider.GetComponent<IDamage>();
             if (dmg != null)
             {
-                dmg.takeDamage((int)(shootDamage * damageBoost)); // Apply boosted damage during surge
+                dmg.takeDamage((int)(shootDamage * damageBoost));
             }
         }
     }
 
-<<<<<<< Updated upstream
     public void addAmmo(int value)
-=======
-    // Ammo function 
-    public void addAmmo(int value)
-    {
-        ammo += value; 
-        if(ammo > maxAmmo)
-        {
-            ammo = maxAmmo; 
-        }
-    }
-
-    // Slide start and stop
-    void startSlide()
->>>>>>> Stashed changes
     {
         ammo += value;
         if (ammo > maxAmmo)
@@ -160,7 +116,6 @@ public class playerController : MonoBehaviour, IDamage
         HP -= amount;
         if (HP <= 0)
         {
-            // You Lose!!!
             gamemanager.instance.youLose();
         }
     }
