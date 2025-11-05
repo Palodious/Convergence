@@ -241,9 +241,6 @@ public class enemyAI : MonoBehaviour, IDamage
     {
         meleeTimer = 0; // Resets melee cooldown
         Instantiate(meleePrefab, shootPOS.position, transform.rotation); // Spawns melee prefab for visual/damage zone
-
-        if (meleeFX != null)
-            Instantiate(meleeFX, shootPOS.position, transform.rotation); // Plays melee FX if assigned
     }
     void Patrol()
     {
