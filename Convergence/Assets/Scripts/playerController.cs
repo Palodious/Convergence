@@ -94,10 +94,9 @@ public class playerController : MonoBehaviour, IDamage
         handleHealthRegen(); // Restores HP gradually
         handleShieldRegen(); // Restores shield gradually
     }
-
-
     void movement()
     {
+        // --- Gravity & Ground Check ---
         if (controller.isGrounded)
         {
             playerVel = Vector3.zero;
@@ -108,16 +107,25 @@ public class playerController : MonoBehaviour, IDamage
             playerVel.y -= gravity * Time.deltaTime;
         }
 
+        // --- Directional Movement ---
         moveDir = Input.GetAxis("Horizontal") * transform.right + Input.GetAxis("Vertical") * transform.forward;
         controller.Move(moveDir * speed * Time.deltaTime);
 
-        jump();
+        jump(); // Handle jump input
         controller.Move(playerVel * Time.deltaTime);
 
+        // --- Shooting Input ---
         if (Input.GetButton("Fire1") && shootTimer >= shootRate)
         {
             shoot();
         }
+
+        // --- Advanced Movement Inputs ---
+        if (Input.GetButtonDown("Slide") && !isSliding) StartCoroutine(PerformSlide());
+        if (Input.GetButtonDown("Dodge") && dodgeTimer >= dodgeCooldown) StartCoroutine(PerformDodgeRoll());
+        if (Input.GetButton("Glide") && !controller.isGrounded) Glide();
+        else if (Input.GetButtonUp("Glide")) playerVel.y = 0; // Reset glide lift
+        if (!isWallRunning && canWallRun) CheckWallRun(); // Checks if wall-running possible
     }
 
     void sprint()
