@@ -296,21 +296,21 @@ MonoBehaviour:
   pulseDamage: 3
   pulseRange: 0
   pulseCooldown: 0
-  pulseFlowCost: 0
+  pulseEnergyCost: 0
   surgeDuration: 0
   surgeSpeedBoost: 0
   surgeDamageBoost: 0
   surgeCooldown: 0
-  surgeFlowCost: 0
+  surgeEnergyCost: 0
   collapseDamage: 0
   collapseRadius: 0
   collapseCooldown: 0
-  collapseFlowCost: 0
+  collapseEnergyCost: 0
   collapseSlowTime: 0
   collapseSlowScale: 0
   jumpDistance: 10
   jumpCooldown: 1
-  jumpFlowCost: 2
+  jumpEnergyCost: 0
 --- !u!1001 &1192288701
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3343,6 +3343,10 @@ PrefabInstance:
     - target: {fileID: 4645199402670229611, guid: 917046d92de302543add10dd4316627e, type: 3}
       propertyPath: shieldRegenRate
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4645199402670229611, guid: 917046d92de302543add10dd4316627e, type: 3}
+      propertyPath: shootEnergyCost
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4645199402670229611, guid: 917046d92de302543add10dd4316627e, type: 3}
       propertyPath: wallRunCooldown

@@ -10,27 +10,27 @@ public class playerAbilities : MonoBehaviour
     [SerializeField] int pulseDamage;
     [SerializeField] float pulseRange;
     [SerializeField] float pulseCooldown;
-    [SerializeField] int pulseFlowCost;
+    [SerializeField] int pulseEnergyCost;
 
     // Rift Surge
     [SerializeField] float surgeDuration;
     [SerializeField] float surgeSpeedBoost;
     [SerializeField] float surgeDamageBoost;
     [SerializeField] float surgeCooldown;
-    [SerializeField] int surgeFlowCost;
+    [SerializeField] int surgeEnergyCost;
 
     // Rift Collapse
     [SerializeField] int collapseDamage;
     [SerializeField] float collapseRadius;
     [SerializeField] float collapseCooldown;
-    [SerializeField] int collapseFlowCost;
+    [SerializeField] int collapseEnergyCost;
     [SerializeField] float collapseSlowTime;
     [SerializeField] float collapseSlowScale;
 
     // Rift Jump
     [SerializeField] float jumpDistance;
     [SerializeField] float jumpCooldown;
-    [SerializeField] int jumpFlowCost;
+    [SerializeField] int jumpEnergyCost;
 
     // Timers
     float pulseTimer;
