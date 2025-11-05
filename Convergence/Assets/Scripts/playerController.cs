@@ -202,7 +202,46 @@ public class playerController : MonoBehaviour, IDamage
 
         isDodging = false;
     }
+    void Glide()
+    {
+        // Reduces gravity while gliding for slower fall
+        playerVel.y = Mathf.Max(playerVel.y - glideGravity * Time.deltaTime, -glideGravity);
+    }
 
+    void CheckWallRun()
+    {
+        RaycastHit leftHit, rightHit;
+
+        // Casts rays on both sides to detect walls
+        bool leftWall = Physics.Raycast(transform.position, -transform.right, out leftHit, wallCheckDistance);
+        bool rightWall = Physics.Raycast(transform.position, transform.right, out rightHit, wallCheckDistance);
+
+        if (leftWall) StartCoroutine(PerformWallRun(leftHit.normal));
+        else if (rightWall) StartCoroutine(PerformWallRun(rightHit.normal));
+    }
+
+    IEnumerator PerformWallRun(Vector3 wallNormal)
+    {
+        isWallRunning = true;
+        canWallRun = false;
+        wallRunTimer = 0f;
+
+        while (wallRunTimer < wallRunDuration && !controller.isGrounded)
+        {
+            wallRunTimer += Time.deltaTime;
+
+            // Calculates movement along the wall direction
+            Vector3 alongWall = Vector3.Cross(wallNormal, Vector3.up);
+            controller.Move(alongWall * wallRunSpeed * Time.deltaTime);
+
+            playerVel.y = 0; // Negates gravity effect during wall run
+            yield return null;
+        }
+
+        isWallRunning = false;
+        yield return new WaitForSeconds(wallRunCooldown);
+        canWallRun = true; // Re-enables wall run
+    }
     public void addAmmo(int value)
     {
         ammo += value;
