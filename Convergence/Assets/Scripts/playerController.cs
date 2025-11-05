@@ -242,6 +242,40 @@ public class playerController : MonoBehaviour, IDamage
         yield return new WaitForSeconds(wallRunCooldown);
         canWallRun = true; // Re-enables wall run
     }
+
+    void handleHealthRegen()
+    {
+        // Regenerates health slowly after delay if below max
+        if (HP < maxHP && HP > 0)
+        {
+            healthRegenTimer += Time.deltaTime;
+            if (healthRegenTimer >= healthRegenDelay)
+            {
+                HP += Mathf.CeilToInt(healthRegenRate * Time.deltaTime);
+                HP = Mathf.Clamp(HP, 0, maxHP);
+            }
+        }
+    }
+
+    void handleShieldRegen()
+    {
+        // Regenerates shield if not broken and below max
+        if (shield < maxShield && !shieldBroken)
+        {
+            shieldRegenTimer += Time.deltaTime;
+            if (shieldRegenTimer >= shieldRegenDelay)
+            {
+                shield += Mathf.CeilToInt(shieldRegenRate * Time.deltaTime);
+                shield = Mathf.Clamp(shield, 0, maxShield);
+            }
+        }
+        // If shield fully regenerates after break, reset
+        else if (shieldBroken && shield >= maxShield)
+        {
+            resetShieldBreak();
+        }
+    }
+
     public void addAmmo(int value)
     {
         ammo += value;
