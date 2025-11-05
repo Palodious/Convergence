@@ -1,19 +1,24 @@
+using System.Collections;
 using UnityEngine;
 
 public class playerController : MonoBehaviour, IDamage
 {
-    [SerializeField] CharacterController controller;
-    [SerializeField] LayerMask ignoreLayer;
+    // -------------------------------
+    // --- Player Movement Settings ---
+    // -------------------------------
+    [SerializeField] CharacterController controller; // Character controller used for movement and collisions
+    [SerializeField] LayerMask ignoreLayer; // Layers to ignore in raycasts
+    [SerializeField] float speed; // Normal walking speed
+    [SerializeField] int sprintMod; // Speed multiplier when sprinting
+    [SerializeField] float jumpSpeed; // Upward velocity when jumping
+    [SerializeField] int maxJumps; // Number of allowed jumps before landing
+    [SerializeField] float gravity; // Gravitational force applied to player
 
     [SerializeField] int HP = 50;
     [SerializeField] int maxHP = 100;
     [SerializeField] int ammo = 30;
     [SerializeField] int maxAmmo = 100;
-    [SerializeField] float speed = 5f;
-    [SerializeField] int sprintMod = 2;
-    [SerializeField] float JumpSpeed = 8f;
-    [SerializeField] int maxJumps = 2;
-    [SerializeField] float gravity = 9.81f;
+    
 
     [SerializeField] int shootDamage = 10;
     [SerializeField] float shootDist = 50f;
