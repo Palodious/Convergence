@@ -121,10 +121,17 @@ public class playerController : MonoBehaviour, IDamage
         }
 
         // --- Glide Activation ---
-        if (Input.GetKeyDown(KeyCode.G))
-            StartGlide();
-        if (Input.GetKeyUp(KeyCode.G))
-            StopGlide();
+        if (!controller.isGrounded)
+        {
+            if (Input.GetKeyDown(KeyCode.G))
+                StartGlide();
+            if (Input.GetKeyUp(KeyCode.G))
+                StopGlide();
+        }
+        else if (isGliding)
+        {
+            StopGlide(); // Stop glide on landing
+        }
 
         handleHealthRegen(); // Restores HP gradually
         handleShieldRegen(); // Restores shield gradually
@@ -139,11 +146,15 @@ public class playerController : MonoBehaviour, IDamage
             if (playerVel.y < 0)
                 playerVel.y = -2f; // keeps player grounded
             jumpCount = 0;
-            isGliding = false; // stops gliding when grounded
         }
-        else if (!isGliding)
+        else
         {
-            playerVel.y -= gravity * Time.deltaTime;
+            // --- Gravity / Glide Control ---
+            // Applies normal gravity unless gliding (press G mid-air)
+            if (isGliding)
+                playerVel.y = Mathf.Max(playerVel.y - (glideGravity * 0.2f * Time.deltaTime), -glideGravity); // gentle descent while gliding
+            else
+                playerVel.y -= gravity * Time.deltaTime; // regular fall speed
         }
 
         // --- Directional Movement ---
@@ -151,19 +162,34 @@ public class playerController : MonoBehaviour, IDamage
         controller.Move(moveDir * speed * Time.deltaTime);
 
         jump(); // Handle jump input
-        controller.Move(playerVel * Time.deltaTime);
+        controller.Move(playerVel * Time.deltaTime); // Apply vertical motion (jump / gravity)
 
         // --- Advanced Movement Inputs ---
         if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.C) && !isSliding && controller.isGrounded)
-            StartCoroutine(PerformSlide());
+            StartCoroutine(PerformSlide()); // Slide when holding shift + crouch
         else if (Input.GetKey(KeyCode.C))
-            crouch();
+            crouch(); // Hold C to crouch
         else if (Input.GetKeyUp(KeyCode.C))
-            uncrouch();
+            uncrouch(); // Release C to stand
 
+        // --- Glide Activation ---
+        if (!controller.isGrounded)
+        {
+            if (Input.GetKeyDown(KeyCode.G))
+                StartGlide(); // Start gliding in mid-air
+            if (Input.GetKeyUp(KeyCode.G))
+                StopGlide(); // Stop gliding when G is released
+        }
+        else if (isGliding)
+        {
+            StopGlide(); // Automatically stop glide upon landing
+        }
+
+        // --- Wall Running ---
         if (!isWallRunning && canWallRun)
-            CheckWallRun();
+            CheckWallRun(); // Detect and initiate wall run
     }
+
 
     void sprint()
     {
@@ -248,13 +274,14 @@ public class playerController : MonoBehaviour, IDamage
         if (!controller.isGrounded && !isGliding)
         {
             isGliding = true;
-            StartCoroutine(Glide());
+            playerVel.y = -1f; // small downward force to start descent
         }
     }
 
     void StopGlide()
     {
-        isGliding = false;
+        if (isGliding)
+            isGliding = false;
     }
 
     IEnumerator Glide()
