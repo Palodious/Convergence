@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &7912181465920922368
+--- !u!1 &2041587132576922174
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,58 +8,58 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1574245673484667140}
-  - component: {fileID: 831637411154108730}
-  - component: {fileID: 7911416017949441321}
-  - component: {fileID: -4893042831046065791}
-  - component: {fileID: 9186534714064347556}
+  - component: {fileID: 5134188331545677114}
+  - component: {fileID: 7690241884291415516}
+  - component: {fileID: 281731078060810294}
+  - component: {fileID: 2110795195314288803}
+  - component: {fileID: 3937273686001583740}
   m_Layer: 0
-  m_Name: Laser
+  m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1574245673484667140
+--- !u!4 &5134188331545677114
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7912181465920922368}
+  m_GameObject: {fileID: 2041587132576922174}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1065.004, y: 43.21, z: 155.015}
-  m_LocalScale: {x: 0.038278, y: 0.076672, z: 0.0071962}
+  m_LocalRotation: {x: 0.6783495, y: -0, z: -0, w: 0.7347394}
+  m_LocalPosition: {x: 1064.466, y: 44.92094, z: 159.803}
+  m_LocalScale: {x: 0.5396, y: 0.86336, z: 0.46117}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &831637411154108730
+  m_LocalEulerAnglesHint: {x: 85.43, y: 0, z: 0}
+--- !u!114 &7690241884291415516
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7912181465920922368}
+  m_GameObject: {fileID: 2041587132576922174}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d36952d2fc1847e458ad6302037e05d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::damage
-  type: 0
-  rb: {fileID: -4893042831046065791}
-  damageAmount: 10
-  damageRate: 0.25
-  speed: 15
+  type: 2
+  rb: {fileID: 2110795195314288803}
+  damageAmount: 5
+  damageRate: 2
+  speed: 3
   destroyTime: 3
---- !u!135 &7911416017949441321
-SphereCollider:
+--- !u!136 &281731078060810294
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7912181465920922368}
+  m_GameObject: {fileID: 2041587132576922174}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -68,19 +68,21 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!54 &-4893042831046065791
+  serializedVersion: 2
+  m_Radius: 0.5000001
+  m_Height: 2.25
+  m_Direction: 1
+  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
+--- !u!54 &2110795195314288803
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7912181465920922368}
+  m_GameObject: {fileID: 2041587132576922174}
   serializedVersion: 5
   m_Mass: 1
   m_LinearDamping: 0
@@ -100,15 +102,15 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 1
---- !u!96 &9186534714064347556
+  m_CollisionDetection: 2
+--- !u!96 &3937273686001583740
 TrailRenderer:
   serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7912181465920922368}
+  m_GameObject: {fileID: 2041587132576922174}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -127,7 +129,7 @@ TrailRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10301, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: e187f7e3f8af80041bb71664cf658253, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -171,17 +173,17 @@ TrailRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 0.9481132, g: 0.17441708, b: 0.17441708, a: 1}
-      key1: {r: 0.9481132, g: 0.17441708, b: 0.17441708, a: 1}
-      key2: {r: 1, g: 1, b: 1, a: 0}
+      key0: {r: 0.9481132, g: 0.37593907, b: 0, a: 1}
+      key1: {r: 0.9858491, g: 0.7022448, b: 0, a: 1}
+      key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
       key5: {r: 0, g: 0, b: 0, a: 0}
       key6: {r: 0, g: 0, b: 0, a: 0}
       key7: {r: 0, g: 0, b: 0, a: 0}
-      ctime0: 0
+      ctime0: 37008
       ctime1: 65535
-      ctime2: 65535
+      ctime2: 0
       ctime3: 0
       ctime4: 0
       ctime5: 0

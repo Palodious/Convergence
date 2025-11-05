@@ -15,8 +15,7 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] int faceTargetSpeed;
 
     [SerializeField] bool canShoot; // Enables or disables shooting from Inspector
-    [SerializeField] GameObject bullet; // Prefab for bullet attack
-    [SerializeField] GameObject shootFX; // Visual effect prefab for shooting
+    [SerializeField] GameObject projectile; // Prefab for bullet attack
     [SerializeField] float shootRate;
     [SerializeField] Transform shootPOS;
 
@@ -36,14 +35,12 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] bool hasMelee; // Enables close-range melee attack
 
     [SerializeField] GameObject meleePrefab; // Prefab for melee hit
-    [SerializeField] GameObject meleeFX; // Visual effect prefab for melee hit
     [SerializeField] float meleeRange; // Distance required to use melee
     [SerializeField] float meleeCD; // Cooldown between melee hits
     [SerializeField] Transform meleePOS; // Spawn point for melee prefab
     float meleeTimer; // Tracks melee cooldown
 
     [SerializeField] GameObject flamethrowerPrefab; // Prefab for flamethrower attack
-    [SerializeField] ParticleSystem flamethrowerFX; // Visual effect for flamethrower
     [SerializeField] float flamethrowerDuration; // How long the flamethrower lasts
     [SerializeField] float flamethrowerRange; // Range of flamethrower
     [SerializeField] float flamethrowerCD; // Time before flamethrower can be used again
@@ -51,14 +48,12 @@ public class enemyAI : MonoBehaviour, IDamage
     float flamethrowerTimer; // Timer for flamethrower CD
 
     [SerializeField] GameObject shockPrefab; // Prefab for shock attack
-    [SerializeField] GameObject shockFX; // Visual effect prefab for electrical shock
     [SerializeField] float shockRange; // Radius of shockwave
     [SerializeField] float shockCD; // CD time before shock can be used again
     [SerializeField] Transform shockPOS; // Spawn point for shock prefab
     float shockTimer; // Timer for shock ability
 
     [SerializeField] GameObject leapPrefab; // Prefab for leap attack
-    [SerializeField] GameObject leapFX; // Visual effect prefab for leap and stomp impact
     [SerializeField] float stompRadius; // Area that gets hit when landing
     [SerializeField] int leapDamage; // Damage caused when stomping down
     [SerializeField] float leapForce; // Force of jump movement
@@ -67,7 +62,6 @@ public class enemyAI : MonoBehaviour, IDamage
     float leapTimer; // Timer for leap CD
 
     [SerializeField] GameObject dashPrefab; // Prefab for dash attack
-    [SerializeField] GameObject dashFX; // Visual effect prefab for dash charge impact
     [SerializeField] int dashDamage; // Damage caused by dash impact
     [SerializeField] float dashKnockbackForce; // Force that pushes player backwards
     [SerializeField] float dashSpeed; // Speed of dash attack
@@ -240,11 +234,8 @@ public class enemyAI : MonoBehaviour, IDamage
     }
     void Shoot()
     {
-        shootTimer = 0;
-        Instantiate(bullet, shootPOS.position, transform.rotation); // Spawns bullet prefab from shoot position
-
-        if (shootFX != null)
-            Instantiate(shootFX, shootPOS.position, transform.rotation); // Plays shooting visual effect if assigned
+        shootTimer = 0; // Resets shoot cooldown timer
+        Instantiate(projectile, shootPOS.position, transform.rotation); // Spawns projectile prefab from shoot position
     }
     void Melee()
     {
@@ -290,24 +281,13 @@ public class enemyAI : MonoBehaviour, IDamage
     IEnumerator Flamethrower()
     {
         flamethrowerTimer = 0; // Resets flamethrower CD timer
-        if (flamethrowerFX != null)
-            flamethrowerFX.Play(); // Plays flamethrower particle effect
-
         Instantiate(flamethrowerPrefab, flamethrowerPOS.position, transform.rotation); // Spawns flamethrower prefab
-
         yield return new WaitForSeconds(flamethrowerDuration); // Waits for flamethrower duration
-
-        if (flamethrowerFX != null)
-            flamethrowerFX.Stop(); // Stops flamethrower particle effect
     }
     IEnumerator Shock()
     {
         shockTimer = 0; // Resets shock CD timer
         Instantiate(shockPrefab, shockPOS.position, transform.rotation); // Spawns shock prefab
-
-        if (shockFX != null)
-            Instantiate(shockFX, shockPOS.position, transform.rotation); // Spawns shock FX prefab if assigned
-
         yield return null;
     }
     IEnumerator Leap()
@@ -335,14 +315,10 @@ public class enemyAI : MonoBehaviour, IDamage
             }
         }
     }
-
     IEnumerator Dash()
     {
         dashTimer = 0; // Resets dash CD timer
         Instantiate(dashPrefab, dashPOS.position, transform.rotation); // Spawns dash prefab
-
-        if (dashFX != null)
-            Instantiate(dashFX, dashPOS.position, transform.rotation); // Spawns dash FX prefab if assigned
 
         Vector3 dir = (gamemanager.instance.player.transform.position - transform.position).normalized; // Calculates dash direction toward player
         Vector3 startPos = transform.position; // Records starting position
@@ -375,5 +351,4 @@ public class enemyAI : MonoBehaviour, IDamage
             }
         }
     }
-
 }
