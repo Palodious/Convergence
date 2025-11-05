@@ -49,11 +49,23 @@ public class playerController : MonoBehaviour, IDamage
     // --- Player Boosts ---
     // ---------------------
     [HideInInspector] public float damageBoost = 1f; // Used by abilities for temporary damage increase
-
-    Vector3 moveDir;
-    Vector3 playerVel;
-    int jumpCount;
-    float shootTimer;
+    // ------------------------
+    // --- Internal Tracking ---
+    // ------------------------
+    Vector3 moveDir; // Stores direction of movement
+    Vector3 playerVel; // Stores vertical velocity (for jump / gravity)
+    int jumpCount; // Tracks current jump count
+    float shootTimer; // Timer to control firing rate
+    float healthRegenTimer; // Timer for HP regeneration
+    float shieldRegenTimer; // Timer for shield regeneration
+    bool shieldBroken; // True when shield is depleted
+    bool isSliding; // True while slide coroutine is active
+    bool isDodging; // True while dodge coroutine is active
+    bool isWallRunning; // True while wall-run is active
+    bool canWallRun = true; // Prevents instant re-wall-running
+    float dodgeTimer; // Timer for dodge cooldown
+    float wallRunTimer; // Timer for wall-run duration
+    Color colorOrig; // Stores original model color for feedback resets
 
     // --- Properties ---
     public CharacterController Controller => controller;
