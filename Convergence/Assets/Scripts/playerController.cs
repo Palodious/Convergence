@@ -10,6 +10,7 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] LayerMask ignoreLayer; // Layers to ignore in raycasts
     [SerializeField] float speed; // Normal walking speed
     [SerializeField] int sprintMod; // Speed multiplier when sprinting
+    [SerializeField] float jumpHeight; // adjust this to control jump height
     [SerializeField] float jumpSpeed; // Upward velocity when jumping
     [SerializeField] int maxJumps; // Number of allowed jumps before landing
     [SerializeField] float gravity; // Gravitational force applied to player
@@ -118,7 +119,7 @@ public class playerController : MonoBehaviour, IDamage
         if (controller.isGrounded)
         {
             if (playerVel.y < 0)
-                playerVel.y = -2f;
+                playerVel.y = -2f; // keeps player grounded
             jumpCount = 0;
         }
         else
@@ -132,10 +133,6 @@ public class playerController : MonoBehaviour, IDamage
 
         jump(); // Handle jump input
         controller.Move(playerVel * Time.deltaTime);
-
-        // --- Shooting Input ---
-        if (Input.GetButton("Fire1") && shootTimer >= shootRate)
-            shoot();
 
         // --- Advanced Movement Inputs ---
         if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.C) && !isSliding && controller.isGrounded)
@@ -168,7 +165,8 @@ public class playerController : MonoBehaviour, IDamage
         // Handles jumping logic, including multiple jumps
         if (Input.GetButtonDown("Jump") && jumpCount < maxJumps)
         {
-            playerVel.y = jumpSpeed;
+            // Give a strong upward push
+            playerVel.y = jumpSpeed * jumpHeight;
             jumpCount++;
         }
     }
