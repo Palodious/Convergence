@@ -31,7 +31,6 @@ public class playerAbilities : MonoBehaviour
     [SerializeField] float jumpDistance;
     [SerializeField] float jumpCooldown;
     [SerializeField] int jumpFlowCost;
-    [SerializeField] Transform effectSpawnPoint;
 
     // Timers
     float pulseTimer;
@@ -129,23 +128,21 @@ public class playerAbilities : MonoBehaviour
 
     void RiftJump()
     {
-
-        EffectPool.Instance.Spawn(transform.position, Quaternion.identity);
-
         jumpTimer = 0;
         RaycastHit hit;
         Vector3 targetPos = transform.position + transform.forward * jumpDistance;
 
+        // Check if something is in the way — stop before hitting it
         if (Physics.Raycast(transform.position, transform.forward, out hit, jumpDistance))
         {
             targetPos = hit.point - transform.forward * 1f;
         }
 
-        controller.GetComponent<CharacterController>().enabled = false;
-        EffectPool.Instance?.Spawn(effectSpawnPoint.position, Quaternion.identity);
-        controller.GetComponent<CharacterController>().enabled = true;
-
-        EffectPool.Instance?.Spawn(targetPos, Quaternion.identity);
+        // Temporarily disable character controller to move the player
+        CharacterController cc = controller.GetComponent<CharacterController>();
+        cc.enabled = false;
+        transform.position = targetPos;
+        cc.enabled = true;
     }
 }
 
