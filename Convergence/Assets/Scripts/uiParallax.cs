@@ -28,7 +28,7 @@ public class uiParallax : MonoBehaviour
         float nx = ((mouse.x / Screen.width) - 0.5f) * 2f;
         float ny = ((mouse.y / Screen.height) - 0.5f) * 2f;
 
-        Vector3 target = startLocalPos + new Vector3(-nx * range, -ny * range, 0f);
+        Vector3 target = startLocalPos + new Vector3(nx * range, ny * range, 0f);
         rt.localPosition = Vector3.Lerp(rt.localPosition, target, smooth * Time.unscaledDeltaTime);
     }
 }

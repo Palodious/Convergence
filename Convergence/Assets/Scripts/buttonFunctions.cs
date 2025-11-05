@@ -15,9 +15,18 @@ public class buttonFunctions : MonoBehaviour
         gamemanager.instance.stateUnpause();
     }
 
-    public void quit()
+    public void mainmenu()
     {
         gamemanager.instance.stateUnpause();
         SceneManager.LoadScene("MainMenu");
+    }
+
+    public void quit()
+    {
+        #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+        #else
+        Application.Quit();
+        #endif
     }
 }
