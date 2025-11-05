@@ -72,7 +72,15 @@ public class playerController : MonoBehaviour, IDamage
     public CharacterController Controller => controller;
     public float Speed { get => speed; set => speed = value; }
     public int HPValue { get => HP; set => HP = value; }
-
+    // Start initializes HP, shield, and visuals
+    void Start()
+    {
+        HP = maxHP;
+        shield = maxShield;
+        shieldBroken = false;
+        if (model != null)
+            colorOrig = model.material.color; // Store original model color
+    }
     void Update()
     {
         Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
