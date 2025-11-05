@@ -70,7 +70,7 @@ public class playerAbilities : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R) && collapseTimer >= collapseCooldown)
             StartCoroutine(RiftCollapse());
 
-        if (Input.GetKeyDown(KeyCode.H) && jumpTimer >= jumpCooldown)
+        if (Input.GetKeyDown(KeyCode.F) && jumpTimer >= jumpCooldown)
             RiftJump();
 
         if (isSurging && Time.time >= surgeEndTime)
