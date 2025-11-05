@@ -159,6 +159,49 @@ public class playerController : MonoBehaviour, IDamage
             }
         }
     }
+    IEnumerator PerformSlide()
+    {
+        isSliding = true; // Locks slide state
+        float elapsed = 0f;
+
+        Vector3 slideDir = moveDir.normalized;
+        if (slideDir == Vector3.zero) slideDir = transform.forward; // Defaults to facing direction
+
+        // Safety check to ensure slide path is clear
+        if (Physics.Raycast(transform.position, slideDir, 1f)) yield break;
+
+        while (elapsed < slideDuration)
+        {
+            elapsed += Time.deltaTime;
+            controller.Move(slideDir * slideSpeed * Time.deltaTime); // Moves player forward
+            yield return null;
+        }
+
+        isSliding = false; // Ends slide state
+    }
+
+    IEnumerator PerformDodgeRoll()
+    {
+        isDodging = true;
+        dodgeTimer = 0; // Reset cooldown
+        Vector3 dodgeDir = moveDir.normalized;
+        if (dodgeDir == Vector3.zero) dodgeDir = transform.forward;
+
+        // Safety raycast to ensure dodge direction is clear
+        if (Physics.Raycast(transform.position, dodgeDir, 1f)) yield break;
+
+        float dodgeTime = 0.2f;
+        float elapsed = 0f;
+
+        while (elapsed < dodgeTime)
+        {
+            elapsed += Time.deltaTime;
+            controller.Move(dodgeDir * (dodgeDistance / dodgeTime) * Time.deltaTime); // Smooth dodge
+            yield return null;
+        }
+
+        isDodging = false;
+    }
 
     public void addAmmo(int value)
     {
