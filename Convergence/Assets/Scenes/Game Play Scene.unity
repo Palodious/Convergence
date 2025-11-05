@@ -735,11 +735,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2906075524983719381}
-  - component: {fileID: 2906075524983719384}
   - component: {fileID: 2075639754205289937}
+  - component: {fileID: 2906075524983719384}
   - component: {fileID: 1013589693590344923}
   - component: {fileID: 2906075524983719383}
   - component: {fileID: 2906075524983719382}
+  - component: {fileID: 2906075524983719385}
   m_Layer: 0
   m_Name: robot_metallic
   m_TagString: Untagged
@@ -1238,7 +1239,7 @@ MonoBehaviour:
   model: {fileID: 2111371238112013058}
   headPos: {fileID: 6071265755540148652}
   HP: 10
-  FOV: 10
+  FOV: 50
   faceTargetSpeed: 5
   canShoot: 1
   projectile: {fileID: 7912181465920922368, guid: b852811fe5168d247a8247d006e52290, type: 3}
@@ -1274,10 +1275,10 @@ MonoBehaviour:
   dashSpeed: 0
   dashCD: 0
   dashPOS: {fileID: 0}
-  maxShield: 0
-  shieldHP: 0
-  shieldRegenRate: 0
-  shieldDelay: 0
+  maxShield: 10
+  shieldHP: 10
+  shieldRegenRate: 0.01
+  shieldDelay: 3
   patrolPoints:
   - {fileID: 342882214}
   - {fileID: 639328716}
@@ -1663,12 +1664,12 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Radius: 10
+  m_Center: {x: 0, y: 4, z: 0}
 --- !u!64 &2906075524983719383
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1713,6 +1714,29 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!136 &2906075524983719385
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 261793097316077606}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 1
+  m_Height: 6
+  m_Direction: 1
+  m_Center: {x: 0, y: 3, z: 0}
 --- !u!1 &3035256190841288669
 GameObject:
   m_ObjectHideFlags: 0
