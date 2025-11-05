@@ -275,6 +275,32 @@ public class playerController : MonoBehaviour, IDamage
             resetShieldBreak();
         }
     }
+    void triggerShieldBreak()
+    {
+        // Handles visual and state feedback when shield breaks
+        shieldBroken = true;
+        shield = 0;
+        if (model != null)
+        {
+            model.material.color = Color.blue;
+            StartCoroutine(ResetModelColor());
+        }
+        Debug.Log("Shield Broken!");
+    }
+
+    void resetShieldBreak()
+    {
+        // Resets broken shield state
+        shieldBroken = false;
+        Debug.Log("Shield Restored!");
+    }
+
+    IEnumerator ResetModelColor()
+    {
+        yield return new WaitForSeconds(0.2f);
+        if (model != null)
+            model.material.color = colorOrig;
+    }
 
     public void addAmmo(int value)
     {
@@ -285,10 +311,35 @@ public class playerController : MonoBehaviour, IDamage
 
     public void takeDamage(int amount)
     {
-        HP -= amount;
-        if (HP <= 0)
+        // Applies damage to shield first
+        if (shield > 0)
         {
-            gamemanager.instance.youLose();
+            shield -= amount;
+            shieldRegenTimer = 0;
+
+            if (model != null)
+            {
+                model.material.color = Color.cyan;
+                StartCoroutine(ResetModelColor());
+            }
+
+            if (shield <= 0)
+                triggerShieldBreak();
+
+            return;
         }
+
+        // If shield gone, apply damage to HP
+        HP -= amount;
+        healthRegenTimer = 0;
+
+        if (model != null)
+        {
+            model.material.color = Color.red;
+            StartCoroutine(ResetModelColor());
+        }
+
+        if (HP <= 0)
+            gamemanager.instance.youLose(); // Triggers game over
     }
 }
