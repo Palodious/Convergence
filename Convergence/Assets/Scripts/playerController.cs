@@ -66,8 +66,9 @@ public class playerController : MonoBehaviour, IDamage
     float dodgeTimer; // Timer for dodge cooldown
     float wallRunTimer; // Timer for wall-run duration
     Color colorOrig; // Stores original model color for feedback resets
-
+    // -------------------
     // --- Properties ---
+    // -------------------
     public CharacterController Controller => controller;
     public float Speed { get => speed; set => speed = value; }
     public int HPValue { get => HP; set => HP = value; }
