@@ -25,12 +25,17 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] float wallRunDuration; // Maximum wall-run duration
     [SerializeField] float wallRunCooldown; // Time before wall-run can be reused
     [SerializeField] float wallCheckDistance; // Distance to check for wall proximity (raycast)
-
-
-    [SerializeField] int shootDamage = 10;
-    [SerializeField] float shootDist = 50f;
-    [SerializeField] float shootRate = 0.5f;
-
+    // --------------------------
+    // --- Combat & Shooting ---
+    // --------------------------
+    [SerializeField] int shootDamage; // Damage dealt per shot
+    [SerializeField] float shootDist; // Distance bullet travels (raycast)
+    [SerializeField] float shootRate; // Time between shots
+    [SerializeField] int ammo; // Current ammo
+    [SerializeField] int maxAmmo; // Maximum ammo capacity
+    
+    
+    
     // --- Added for Abilities ---
     [HideInInspector] public float damageBoost = 1f;
 
