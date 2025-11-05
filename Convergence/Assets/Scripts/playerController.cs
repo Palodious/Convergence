@@ -33,9 +33,19 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] float shootRate; // Time between shots
     [SerializeField] int ammo; // Current ammo
     [SerializeField] int maxAmmo; // Maximum ammo capacity
-    
-    
-    
+    // ------------------------
+    // --- Health & Shields ---
+    // ------------------------
+    [SerializeField] int HP; // Current health points
+    [SerializeField] int maxHP; // Maximum HP value
+    [SerializeField] float healthRegenRate; // Rate of HP restoration
+    [SerializeField] float healthRegenDelay; // Delay before HP starts regenerating
+    [SerializeField] int shield; // Current shield amount
+    [SerializeField] int maxShield; // Maximum shield capacity
+    [SerializeField] float shieldRegenRate; // Rate of shield recovery
+    [SerializeField] float shieldRegenDelay; // Delay before shield begins recovering
+    [SerializeField] Renderer model; // Player model renderer for visual feedback (flashes, effects)
+
     // --- Added for Abilities ---
     [HideInInspector] public float damageBoost = 1f;
 
