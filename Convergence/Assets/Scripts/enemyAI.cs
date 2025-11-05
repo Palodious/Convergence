@@ -9,14 +9,15 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] Renderer model;
     [SerializeField] Transform headPos;
 
-    [SerializeField] int HP;
+    [SerializeField] int HP; // Enemy health points
 
-    [SerializeField] int FOV;
-    [SerializeField] int faceTargetSpeed;
+    [SerializeField] int FOV; // Field of view for detecting player
+    [SerializeField] int faceTargetSpeed; // Speed at which enemy rotates to face target
 
-    [SerializeField] GameObject bullet;
-    [SerializeField] float shootRate;
-    [SerializeField] Transform shootPOS;
+    [SerializeField] bool canShoot; // Enables or disables shooting from Inspector
+    [SerializeField] GameObject bullet; // Prefab for bullet attack
+    [SerializeField] float shootRate; // Time between shots
+    [SerializeField] Transform shootPOS; // Spawn point for bullets
 
     Color colorOrig;
 
@@ -31,36 +32,44 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] bool hasShock; // Enables electric shock ability
     [SerializeField] bool hasLeap; // Enables leap and stomp attack
     [SerializeField] bool hasDash; // Enables charging dash attack
+    [SerializeField] bool hasMelee; // Enables close-range melee attack
 
+    [SerializeField] GameObject meleePrefab; // Prefab for melee hit
+    [SerializeField] float meleeRange; // Distance required to use melee
+    [SerializeField] float meleeCD; // Cooldown between melee hits
+    [SerializeField] Transform meleePOS; // Spawn point for melee prefab
+    float meleeTimer; // Tracks melee cooldown
+
+    [SerializeField] GameObject flamethrowerPrefab; // Prefab for flamethrower attack
     [SerializeField] ParticleSystem flamethrowerFX; // Visual effect for flamethrower
-    [SerializeField] int flamethrowerDamage; // Damage per tick of flamethrower
     [SerializeField] float flamethrowerDuration; // How long the flamethrower lasts
-    [SerializeField] float flamethrowerDOTDuration; // How long fire damage lasts after hit
-    [SerializeField] float flamethrowerDOTRate; // How often DOT ticks
     [SerializeField] float flamethrowerRange; // Range of flamethrower
-    float flamethrowerTimer; // Timer for flamethrower cooldown
+    [SerializeField] float flamethrowerCD; // Time before flamethrower can be used again
+    [SerializeField] Transform flamethrowerPOS; // Spawn point for flamethrower prefab
+    float flamethrowerTimer; // Timer for flamethrower CD
 
-    [SerializeField] int shockDamage; // Damage of electrical shock
+    [SerializeField] GameObject shockPrefab; // Prefab for shock attack
     [SerializeField] float shockRange; // Radius of shockwave
-    [SerializeField] float shockCooldown; // Cooldown time before shock can be used again
+    [SerializeField] float shockCD; // CD time before shock can be used again
+    [SerializeField] Transform shockPOS; // Spawn point for shock prefab
     float shockTimer; // Timer for shock ability
 
+    [SerializeField] GameObject leapPrefab; // Prefab for leap attack
     [SerializeField] float leapForce; // Force of jump movement
-    [SerializeField] float stompRadius; // Area that gets hit when landing
-    [SerializeField] int leapDamage; // Damage caused when stomping down
-    [SerializeField] float leapCooldown; // Time before another leap is possible
-    float leapTimer; // Timer for leap cooldown
+    [SerializeField] float leapCD; // Time before another leap is possible
+    [SerializeField] Transform leapPOS; // Spawn point for leap prefab
+    float leapTimer; // Timer for leap CD
 
+    [SerializeField] GameObject dashPrefab; // Prefab for dash attack
     [SerializeField] float dashSpeed; // Speed of dash attack
-    [SerializeField] float dashCooldown; // Time before dash can be used again
-    [SerializeField] int dashDamage; // Damage caused by dash impact
-    [SerializeField] float dashKnockbackForce; // Force that pushes player backwards
-    float dashTimer; // Timer for dash cooldown
+    [SerializeField] float dashCD; // Time before dash can be used again
+    [SerializeField] Transform dashPOS; // Spawn point for dash prefab
+    float dashTimer; // Timer for dash CD
 
     [SerializeField] int maxShield; // Maximum shield capacity
+    [SerializeField] int shieldHP; // Current active shield value, editable in Inspector
     [SerializeField] float shieldRegenRate; // How fast the shield regenerates
     [SerializeField] float shieldDelay; // Delay before shield starts to recharge
-    int currentShield; // Current active shield value
     bool shieldBroken; // Checks if shield has been broken
     float shieldTimer; // Timer for shield regen delay
 
@@ -68,62 +77,71 @@ public class enemyAI : MonoBehaviour, IDamage
     int patrolIndex; // Keeps track of which point it’s moving toward
     bool isPatrolling; // Enables or disables patrol mode
 
-    [SerializeField] GameObject telegraphPrefab; // Prefab used for showing warnings
-    [SerializeField] Color telegraphColor; // Color of warning indicator
-    [SerializeField] float telegraphTime; // How long warning stays before attack
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         colorOrig = model.material.color;
         stoppingDistOrig = agent.stoppingDistance;
 
-        currentShield = maxShield; // Sets shield to max value on start
+        shieldHP = maxShield; // Sets shield to max value on start
         isPatrolling = patrolPoints != null && patrolPoints.Length > 0; // Enables patrol if points exist
     }
 
-    // Update is called once per frame
     void Update()
     {
         shootTimer += Time.deltaTime;
+        meleeTimer += Time.deltaTime;
         flamethrowerTimer += Time.deltaTime;
         shockTimer += Time.deltaTime;
         leapTimer += Time.deltaTime;
         dashTimer += Time.deltaTime;
 
-        if (playerInTrigger && canSeePlayer())
+        bool seesPlayer = playerInTrigger && canSeePlayer();
+
+        if (seesPlayer)
         {
-            if (shootTimer >= shootRate)
+            agent.stoppingDistance = stoppingDistOrig;
+            agent.SetDestination(gamemanager.instance.player.transform.position);
+            faceTarget();
+
+            float distToPlayer = Vector3.Distance(transform.position, gamemanager.instance.player.transform.position);
+
+            if (hasMelee && distToPlayer <= meleeRange && meleeTimer >= meleeCD)
             {
-                shoot();
+                Melee(); // Performs melee hit if within range
             }
 
-            if (hasFlamethrower && flamethrowerTimer >= flamethrowerDuration)
+            if (canShoot && shootTimer >= shootRate && distToPlayer > meleeRange)
             {
-                StartCoroutine(UseFlamethrower()); // Starts flamethrower ability
+                Shoot(); // Fires bullet when timer reaches rate
             }
 
-            if (hasShock && shockTimer >= shockCooldown)
+            if (hasFlamethrower && flamethrowerTimer >= flamethrowerCD)
             {
-                StartCoroutine(UseShock()); // Triggers electrical shock
+                StartCoroutine(Flamethrower()); // Starts flamethrower ability
             }
 
-            if (hasLeap && leapTimer >= leapCooldown)
+            if (hasShock && shockTimer >= shockCD)
             {
-                StartCoroutine(UseLeap()); // Performs leap and stomp attack
+                StartCoroutine(Shock()); // Triggers electrical shock
             }
 
-            if (hasDash && dashTimer >= dashCooldown)
+            if (hasLeap && leapTimer >= leapCD)
             {
-                StartCoroutine(UseDash()); // Performs charging dash
+                StartCoroutine(Leap()); // Performs leap and stomp attack
+            }
+
+            if (hasDash && dashTimer >= dashCD)
+            {
+                StartCoroutine(Dash()); // Performs charging dash
             }
         }
         else if (isPatrolling)
         {
+            agent.stoppingDistance = 0;
             Patrol(); // Moves between patrol points when player not detected
         }
 
-        HandleShieldRegen(); // Handles shield regeneration when possible
+        ShieldRegen(); // Handles shield regeneration when possible
     }
 
     bool canSeePlayer()
@@ -131,18 +149,14 @@ public class enemyAI : MonoBehaviour, IDamage
         playerDir = gamemanager.instance.player.transform.position - headPos.position;
         angleToPlayer = Vector3.Angle(playerDir, transform.forward);
 
-        Debug.DrawRay(headPos.position, playerDir);
+        if (angleToPlayer > FOV * 0.5f) return false;
 
         RaycastHit hit;
-        if (Physics.Raycast(headPos.position, playerDir, out hit))
+        Vector3 rayStart = headPos.position + transform.forward * 0.2f; // prevent self-hit
+        if (Physics.Raycast(rayStart, playerDir.normalized, out hit))
         {
-            if (angleToPlayer <= FOV && hit.collider.CompareTag("Player"))
+            if (hit.collider.CompareTag("Player"))
             {
-                agent.SetDestination(gamemanager.instance.player.transform.position);
-
-                if (agent.remainingDistance <= stoppingDistOrig)
-                    faceTarget();
-
                 return true;
             }
         }
@@ -151,7 +165,8 @@ public class enemyAI : MonoBehaviour, IDamage
 
     void faceTarget()
     {
-        Quaternion rot = Quaternion.LookRotation(new Vector3(playerDir.x, 0, playerDir.z));
+        Vector3 dir = gamemanager.instance.player.transform.position - transform.position;
+        Quaternion rot = Quaternion.LookRotation(new Vector3(dir.x, 0, dir.z));
         transform.rotation = Quaternion.Lerp(transform.rotation, rot, faceTargetSpeed * Time.deltaTime);
     }
 
@@ -173,13 +188,13 @@ public class enemyAI : MonoBehaviour, IDamage
 
     public void takeDamage(int amount)
     {
-        if (currentShield > 0)
+        if (shieldHP > 0)
         {
-            currentShield -= amount; // Damage absorbed by shield first
+            shieldHP -= amount; // Damage absorbed by shield first
 
-            if (currentShield <= 0)
+            if (shieldHP <= 0)
             {
-                currentShield = 0;
+                shieldHP = 0;
                 shieldBroken = true; // Marks shield as broken
                 StartCoroutine(flashShieldBreak()); // Plays break effect
             }
@@ -225,10 +240,16 @@ public class enemyAI : MonoBehaviour, IDamage
         model.material.color = colorOrig;
     }
 
-    void shoot()
+    void Shoot()
     {
         shootTimer = 0;
-        Instantiate(bullet, shootPOS.position, transform.rotation);
+        Instantiate(bullet, shootPOS.position, transform.rotation); // Spawns bullet prefab from shoot position
+    }
+
+    void Melee()
+    {
+        meleeTimer = 0; // Resets melee cooldown
+        Instantiate(meleePrefab, meleePOS.position, transform.rotation); // Spawns melee prefab from melee position
     }
 
     void Patrol()
@@ -241,133 +262,74 @@ public class enemyAI : MonoBehaviour, IDamage
         }
     }
 
-    void HandleShieldRegen()
+    void ShieldRegen()
     {
         // Regenerates shield over time if not broken
-        if (currentShield < maxShield && !shieldBroken)
+        if (shieldHP < maxShield && !shieldBroken)
         {
             shieldTimer += Time.deltaTime; // Tracks elapsed time since last shield hit
 
             if (shieldTimer >= shieldDelay)
             {
-                currentShield += Mathf.CeilToInt(shieldRegenRate * Time.deltaTime); // Gradually restores shield
-                currentShield = Mathf.Clamp(currentShield, 0, maxShield); // Ensures value stays within limits
+                shieldHP += Mathf.CeilToInt(shieldRegenRate * Time.deltaTime); // Gradually restores shield
+                shieldHP = Mathf.Clamp(shieldHP, 0, maxShield); // Ensures value stays within limits
             }
         }
         // Handles shield recovery after being completely broken
-        else if (shieldBroken && currentShield <= 0)
+        else if (shieldBroken && shieldHP <= 0)
         {
             shieldTimer += Time.deltaTime; // Starts delay timer after shield breaks
             if (shieldTimer >= shieldDelay * 2)
             {
                 shieldBroken = false; // Marks shield as active again
-                currentShield = 1; // Restores small portion of shield to reactivate it
+                shieldHP = 1; // Restores small portion of shield to reactivate it
             }
         }
     }
 
-    IEnumerator UseFlamethrower()
+    IEnumerator Flamethrower()
     {
-        flamethrowerTimer = 0; // Resets flamethrower cooldown timer
+        flamethrowerTimer = 0; // Resets flamethrower CD timer
         if (flamethrowerFX != null)
             flamethrowerFX.Play(); // Plays flamethrower particle effect
 
-        GameObject telegraph = ShowTelegraph(shootPOS.position, flamethrowerRange, false); // Shows warning before attack
-        yield return new WaitForSeconds(telegraphTime); // Waits for warning duration before firing
+        Instantiate(flamethrowerPrefab, flamethrowerPOS.position, transform.rotation); // Spawns flamethrower prefab
 
-        float elapsed = 0f;
-        while (elapsed < flamethrowerDuration)
-        {
-            elapsed += Time.deltaTime; // Tracks attack duration
-            RaycastHit hit;
-            // Shoots a ray forward to detect player within range
-            if (Physics.Raycast(shootPOS.position, transform.forward, out hit, flamethrowerRange))
-            {
-                IDamage dmg = hit.collider.GetComponent<IDamage>(); // Checks if object can take damage
-                if (dmg != null && hit.collider.CompareTag("Player"))
-                {
-                    dmg.takeDamage(flamethrowerDamage); // Applies initial flamethrower hit damage
-                    StartCoroutine(ApplyFireDOT(dmg)); // Starts DOT burn effect on player
-                }
-            }
-            yield return null;
-        }
+        yield return new WaitForSeconds(flamethrowerDuration); // Waits for flamethrower duration
 
         if (flamethrowerFX != null)
             flamethrowerFX.Stop(); // Stops flamethrower particle effect
-
-        Destroy(telegraph); // Removes visual warning
     }
 
-    IEnumerator ApplyFireDOT(IDamage dmg)
+    IEnumerator Shock()
     {
-        float timer = 0f;
-        // Applies small repeated fire damage over a set duration
-        while (timer < flamethrowerDOTDuration)
-        {
-            dmg.takeDamage(1); // Applies low tick damage each interval
-            timer += flamethrowerDOTRate; // Tracks DOT time between ticks
-            yield return new WaitForSeconds(flamethrowerDOTRate); // Waits between each burn tick
-        }
+        shockTimer = 0; // Resets shock CD timer
+        Instantiate(shockPrefab, shockPOS.position, transform.rotation); // Spawns shock prefab
+        yield return null;
     }
 
-    IEnumerator UseShock()
+    IEnumerator Leap()
     {
-        shockTimer = 0; // Resets shock cooldown timer
-        GameObject telegraph = ShowTelegraph(transform.position, shockRange, true); // Shows circular warning area
-        yield return new WaitForSeconds(telegraphTime); // Waits before triggering shock
-
-        Collider[] hits = Physics.OverlapSphere(transform.position, shockRange); // Detects all colliders in shock radius
-        foreach (Collider hit in hits)
-        {
-            IDamage dmg = hit.GetComponent<IDamage>(); // Checks if target takes damage
-            if (dmg != null && hit.CompareTag("Player"))
-            {
-                dmg.takeDamage(shockDamage); // Applies electric damage to player in range
-            }
-        }
-
-        Destroy(telegraph); // Removes circular warning after effect
-    }
-
-    IEnumerator UseLeap()
-    {
-        leapTimer = 0; // Resets leap cooldown timer
-        Vector3 target = gamemanager.instance.player.transform.position; // Gets player’s current position
-        GameObject telegraph = ShowTelegraph(target, stompRadius, true); // Shows where enemy will land
-        yield return new WaitForSeconds(telegraphTime); // Waits before jumping to give player time to dodge
+        leapTimer = 0; // Resets leap CD timer
+        Instantiate(leapPrefab, leapPOS.position, transform.rotation); // Spawns leap prefab
+        yield return new WaitForSeconds(0.1f); // Small delay before leap
 
         agent.enabled = false; // Disables NavMeshAgent so physics can move the enemy
         Rigidbody rb = GetComponent<Rigidbody>();
         rb.isKinematic = false; // Allows physics control
-        rb.AddForce((target - transform.position).normalized * leapForce, ForceMode.VelocityChange); // Launches enemy toward player
+        rb.AddForce((gamemanager.instance.player.transform.position - transform.position).normalized * leapForce, ForceMode.VelocityChange); // Launches enemy toward player
         yield return new WaitForSeconds(1f); // Waits for jump to complete
         rb.isKinematic = true; // Restores kinematic state
         agent.enabled = true; // Re-enables NavMeshAgent for normal movement
-
-        // Applies stomp damage to any player caught within landing radius
-        Collider[] hits = Physics.OverlapSphere(transform.position, stompRadius);
-        foreach (Collider hit in hits)
-        {
-            IDamage dmg = hit.GetComponent<IDamage>();
-            if (dmg != null && hit.CompareTag("Player"))
-            {
-                dmg.takeDamage((int)leapDamage); // Applies damage from landing stomp
-            }
-        }
-
-        Destroy(telegraph); // Removes warning circle after attack completes
     }
 
-    IEnumerator UseDash()
+    IEnumerator Dash()
     {
-        dashTimer = 0; // Resets dash cooldown timer
+        dashTimer = 0; // Resets dash CD timer
+        Instantiate(dashPrefab, dashPOS.position, transform.rotation); // Spawns dash prefab
         Vector3 dir = (gamemanager.instance.player.transform.position - transform.position).normalized; // Calculates dash direction toward player
         Vector3 startPos = transform.position; // Records starting position
         Vector3 endPos = startPos + dir * 8f; // Determines where dash will end based on range
-
-        GameObject telegraph = ShowTelegraph(endPos, 2f, false); // Displays dash direction warning
-        yield return new WaitForSeconds(telegraphTime); // Waits before performing dash
 
         float elapsed = 0f;
         float dashDuration = 0.3f; // Time taken to complete dash
@@ -378,37 +340,5 @@ public class enemyAI : MonoBehaviour, IDamage
             transform.position = Vector3.Lerp(startPos, endPos, elapsed / dashDuration);
             yield return null;
         }
-
-        // Detects players hit by dash impact
-        Collider[] hits = Physics.OverlapSphere(transform.position, 2f);
-        foreach (Collider hit in hits)
-        {
-            IDamage dmg = hit.GetComponent<IDamage>();
-            if (dmg != null && hit.CompareTag("Player"))
-            {
-                dmg.takeDamage(dashDamage); // Applies impact damage
-                Rigidbody playerRB = hit.GetComponent<Rigidbody>(); // Gets player’s Rigidbody for knockback
-                if (playerRB != null)
-                {
-                    Vector3 knockDir = (hit.transform.position - transform.position).normalized; // Finds direction away from enemy
-                    playerRB.AddForce(knockDir * dashKnockbackForce, ForceMode.Impulse); // Pushes player backward
-                }
-            }
-        }
-
-        Destroy(telegraph); // Removes dash direction warning
-    }
-
-    GameObject ShowTelegraph(Vector3 pos, float size, bool isCircle)
-    {
-        // Creates temporary visual indicator for attacks
-        if (telegraphPrefab == null) return null;
-        GameObject telegraph = Instantiate(telegraphPrefab, pos, Quaternion.identity); // Spawns telegraph at position
-        telegraph.transform.localScale = Vector3.one * size; // Sets size of indicator
-        Renderer r = telegraph.GetComponent<Renderer>();
-        if (r != null)
-            r.material.color = telegraphColor; // Applies selected color for warning
-        Destroy(telegraph, telegraphTime); // Destroys indicator after timer expires
-        return telegraph; // Returns reference to telegraph object
     }
 }
