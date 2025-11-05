@@ -13,12 +13,19 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] float jumpSpeed; // Upward velocity when jumping
     [SerializeField] int maxJumps; // Number of allowed jumps before landing
     [SerializeField] float gravity; // Gravitational force applied to player
+    // -----------------------------
+    // --- Advanced Movement ---
+    // -----------------------------
+    [SerializeField] float slideSpeed; // Speed during slide
+    [SerializeField] float slideDuration; // Duration of slide movement
+    [SerializeField] float dodgeDistance; // Distance covered during a dodge roll
+    [SerializeField] float dodgeCooldown; // Time before dodge can be used again
+    [SerializeField] float glideGravity; // Gravity applied when gliding (lower for floaty effect)
+    [SerializeField] float wallRunSpeed; // Speed while running along a wall
+    [SerializeField] float wallRunDuration; // Maximum wall-run duration
+    [SerializeField] float wallRunCooldown; // Time before wall-run can be reused
+    [SerializeField] float wallCheckDistance; // Distance to check for wall proximity (raycast)
 
-    [SerializeField] int HP = 50;
-    [SerializeField] int maxHP = 100;
-    [SerializeField] int ammo = 30;
-    [SerializeField] int maxAmmo = 100;
-    
 
     [SerializeField] int shootDamage = 10;
     [SerializeField] float shootDist = 50f;
