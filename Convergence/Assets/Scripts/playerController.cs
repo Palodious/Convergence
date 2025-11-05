@@ -127,41 +127,35 @@ public class playerController : MonoBehaviour, IDamage
         else if (Input.GetButtonUp("Glide")) playerVel.y = 0; // Reset glide lift
         if (!isWallRunning && canWallRun) CheckWallRun(); // Checks if wall-running possible
     }
-
     void sprint()
     {
-        if (Input.GetButtonDown("Sprint"))
-        {
-            speed *= sprintMod;
-        }
-        else if (Input.GetButtonUp("Sprint"))
-        {
-            speed /= sprintMod;
-        }
+        // Multiplies or divides speed on sprint key press/release
+        if (Input.GetButtonDown("Sprint")) speed *= sprintMod;
+        else if (Input.GetButtonUp("Sprint")) speed /= sprintMod;
     }
-
     void jump()
     {
+        // Handles jumping logic, including multiple jumps
         if (Input.GetButtonDown("Jump") && jumpCount < maxJumps)
         {
-            playerVel.y = JumpSpeed;
+            playerVel.y = jumpSpeed;
             jumpCount++;
         }
     }
-
     void shoot()
     {
-        shootTimer = 0;
-
+        shootTimer = 0; // Resets cooldown
         RaycastHit hit;
+
+        // Fires ray from camera forward
         if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
         {
-            Debug.Log(hit.collider.name);
+            Debug.Log(hit.collider.name); // Logs hit object name
 
             IDamage dmg = hit.collider.GetComponent<IDamage>();
             if (dmg != null)
             {
-                dmg.takeDamage((int)(shootDamage * damageBoost));
+                dmg.takeDamage((int)(shootDamage * damageBoost)); // Applies modified damage if boost active
             }
         }
     }
