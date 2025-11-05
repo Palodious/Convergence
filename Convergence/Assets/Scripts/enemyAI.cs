@@ -9,15 +9,16 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] Renderer model;
     [SerializeField] Transform headPos;
 
-    [SerializeField] int HP; // Enemy health points
+    [SerializeField] int HP;
 
-    [SerializeField] int FOV; // Field of view for detecting player
-    [SerializeField] int faceTargetSpeed; // Speed at which enemy rotates to face target
+    [SerializeField] int FOV;
+    [SerializeField] int faceTargetSpeed;
 
     [SerializeField] bool canShoot; // Enables or disables shooting from Inspector
     [SerializeField] GameObject bullet; // Prefab for bullet attack
-    [SerializeField] float shootRate; // Time between shots
-    [SerializeField] Transform shootPOS; // Spawn point for bullets
+    [SerializeField] GameObject shootFX; // Visual effect prefab for shooting
+    [SerializeField] float shootRate;
+    [SerializeField] Transform shootPOS;
 
     Color colorOrig;
 
@@ -35,6 +36,7 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] bool hasMelee; // Enables close-range melee attack
 
     [SerializeField] GameObject meleePrefab; // Prefab for melee hit
+    [SerializeField] GameObject meleeFX; // Visual effect prefab for melee hit
     [SerializeField] float meleeRange; // Distance required to use melee
     [SerializeField] float meleeCD; // Cooldown between melee hits
     [SerializeField] Transform meleePOS; // Spawn point for melee prefab
@@ -49,18 +51,25 @@ public class enemyAI : MonoBehaviour, IDamage
     float flamethrowerTimer; // Timer for flamethrower CD
 
     [SerializeField] GameObject shockPrefab; // Prefab for shock attack
+    [SerializeField] GameObject shockFX; // Visual effect prefab for electrical shock
     [SerializeField] float shockRange; // Radius of shockwave
     [SerializeField] float shockCD; // CD time before shock can be used again
     [SerializeField] Transform shockPOS; // Spawn point for shock prefab
     float shockTimer; // Timer for shock ability
 
     [SerializeField] GameObject leapPrefab; // Prefab for leap attack
+    [SerializeField] GameObject leapFX; // Visual effect prefab for leap and stomp impact
+    [SerializeField] float stompRadius; // Area that gets hit when landing
+    [SerializeField] int leapDamage; // Damage caused when stomping down
     [SerializeField] float leapForce; // Force of jump movement
     [SerializeField] float leapCD; // Time before another leap is possible
     [SerializeField] Transform leapPOS; // Spawn point for leap prefab
     float leapTimer; // Timer for leap CD
 
     [SerializeField] GameObject dashPrefab; // Prefab for dash attack
+    [SerializeField] GameObject dashFX; // Visual effect prefab for dash charge impact
+    [SerializeField] int dashDamage; // Damage caused by dash impact
+    [SerializeField] float dashKnockbackForce; // Force that pushes player backwards
     [SerializeField] float dashSpeed; // Speed of dash attack
     [SerializeField] float dashCD; // Time before dash can be used again
     [SerializeField] Transform dashPOS; // Spawn point for dash prefab
@@ -76,7 +85,6 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] Transform[] patrolPoints; // Array of patrol points
     int patrolIndex; // Keeps track of which point it’s moving toward
     bool isPatrolling; // Enables or disables patrol mode
-
     void Start()
     {
         colorOrig = model.material.color;
@@ -85,7 +93,6 @@ public class enemyAI : MonoBehaviour, IDamage
         shieldHP = maxShield; // Sets shield to max value on start
         isPatrolling = patrolPoints != null && patrolPoints.Length > 0; // Enables patrol if points exist
     }
-
     void Update()
     {
         shootTimer += Time.deltaTime;
@@ -143,7 +150,6 @@ public class enemyAI : MonoBehaviour, IDamage
 
         ShieldRegen(); // Handles shield regeneration when possible
     }
-
     bool canSeePlayer()
     {
         playerDir = gamemanager.instance.player.transform.position - headPos.position;
@@ -162,14 +168,12 @@ public class enemyAI : MonoBehaviour, IDamage
         }
         return false;
     }
-
     void faceTarget()
     {
         Vector3 dir = gamemanager.instance.player.transform.position - transform.position;
         Quaternion rot = Quaternion.LookRotation(new Vector3(dir.x, 0, dir.z));
         transform.rotation = Quaternion.Lerp(transform.rotation, rot, faceTargetSpeed * Time.deltaTime);
     }
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
@@ -177,7 +181,6 @@ public class enemyAI : MonoBehaviour, IDamage
             playerInTrigger = true;
         }
     }
-
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player"))
@@ -185,7 +188,6 @@ public class enemyAI : MonoBehaviour, IDamage
             playerInTrigger = false;
         }
     }
-
     public void takeDamage(int amount)
     {
         if (shieldHP > 0)
@@ -218,40 +220,40 @@ public class enemyAI : MonoBehaviour, IDamage
             StartCoroutine(flashRed());
         }
     }
-
     IEnumerator flashRed()
     {
         model.material.color = Color.red;
         yield return new WaitForSeconds(0.1f);
         model.material.color = colorOrig;
     }
-
     IEnumerator flashShield()
     {
         model.material.color = Color.yellow; // Flashes yellow when shield absorbs hit
         yield return new WaitForSeconds(0.1f);
         model.material.color = colorOrig;
     }
-
     IEnumerator flashShieldBreak()
     {
         model.material.color = Color.white; // Changes color to white when shield is broken
         yield return new WaitForSeconds(0.2f);
         model.material.color = colorOrig;
     }
-
     void Shoot()
     {
         shootTimer = 0;
         Instantiate(bullet, shootPOS.position, transform.rotation); // Spawns bullet prefab from shoot position
-    }
 
+        if (shootFX != null)
+            Instantiate(shootFX, shootPOS.position, transform.rotation); // Plays shooting visual effect if assigned
+    }
     void Melee()
     {
         meleeTimer = 0; // Resets melee cooldown
-        Instantiate(meleePrefab, meleePOS.position, transform.rotation); // Spawns melee prefab from melee position
-    }
+        Instantiate(meleePrefab, shootPOS.position, transform.rotation); // Spawns melee prefab for visual/damage zone
 
+        if (meleeFX != null)
+            Instantiate(meleeFX, shootPOS.position, transform.rotation); // Plays melee FX if assigned
+    }
     void Patrol()
     {
         // Moves between patrol points if there are assigned points
@@ -261,7 +263,6 @@ public class enemyAI : MonoBehaviour, IDamage
             agent.SetDestination(patrolPoints[patrolIndex].position); // Updates next patrol target position
         }
     }
-
     void ShieldRegen()
     {
         // Regenerates shield over time if not broken
@@ -286,7 +287,6 @@ public class enemyAI : MonoBehaviour, IDamage
             }
         }
     }
-
     IEnumerator Flamethrower()
     {
         flamethrowerTimer = 0; // Resets flamethrower CD timer
@@ -300,14 +300,16 @@ public class enemyAI : MonoBehaviour, IDamage
         if (flamethrowerFX != null)
             flamethrowerFX.Stop(); // Stops flamethrower particle effect
     }
-
     IEnumerator Shock()
     {
         shockTimer = 0; // Resets shock CD timer
         Instantiate(shockPrefab, shockPOS.position, transform.rotation); // Spawns shock prefab
+
+        if (shockFX != null)
+            Instantiate(shockFX, shockPOS.position, transform.rotation); // Spawns shock FX prefab if assigned
+
         yield return null;
     }
-
     IEnumerator Leap()
     {
         leapTimer = 0; // Resets leap CD timer
@@ -321,24 +323,57 @@ public class enemyAI : MonoBehaviour, IDamage
         yield return new WaitForSeconds(1f); // Waits for jump to complete
         rb.isKinematic = true; // Restores kinematic state
         agent.enabled = true; // Re-enables NavMeshAgent for normal movement
+
+        // Applies stomp damage to any player caught within landing radius
+        Collider[] hits = Physics.OverlapSphere(transform.position, stompRadius);
+        foreach (Collider hit in hits)
+        {
+            IDamage dmg = hit.GetComponent<IDamage>();
+            if (dmg != null && hit.CompareTag("Player"))
+            {
+                dmg.takeDamage(leapDamage); // Applies damage from landing stomp
+            }
+        }
     }
 
     IEnumerator Dash()
     {
         dashTimer = 0; // Resets dash CD timer
         Instantiate(dashPrefab, dashPOS.position, transform.rotation); // Spawns dash prefab
+
+        if (dashFX != null)
+            Instantiate(dashFX, dashPOS.position, transform.rotation); // Spawns dash FX prefab if assigned
+
         Vector3 dir = (gamemanager.instance.player.transform.position - transform.position).normalized; // Calculates dash direction toward player
         Vector3 startPos = transform.position; // Records starting position
         Vector3 endPos = startPos + dir * 8f; // Determines where dash will end based on range
 
         float elapsed = 0f;
         float dashDuration = 0.3f; // Time taken to complete dash
-        // Moves smoothly from start to end using Lerp
+                                   // Moves smoothly from start to end using Lerp
         while (elapsed < dashDuration)
         {
             elapsed += Time.deltaTime;
             transform.position = Vector3.Lerp(startPos, endPos, elapsed / dashDuration);
             yield return null;
         }
+
+        // Detects players hit by dash impact
+        Collider[] hits = Physics.OverlapSphere(transform.position, 2f);
+        foreach (Collider hit in hits)
+        {
+            IDamage dmg = hit.GetComponent<IDamage>();
+            if (dmg != null && hit.CompareTag("Player"))
+            {
+                dmg.takeDamage(dashDamage); // Applies impact damage
+                Rigidbody playerRB = hit.GetComponent<Rigidbody>(); // Gets player’s Rigidbody for knockback
+                if (playerRB != null)
+                {
+                    Vector3 knockDir = (hit.transform.position - transform.position).normalized; // Finds direction away from enemy
+                    playerRB.AddForce(knockDir * dashKnockbackForce, ForceMode.Impulse); // Pushes player backward
+                }
+            }
+        }
     }
+
 }
