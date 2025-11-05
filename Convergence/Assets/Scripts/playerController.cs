@@ -45,9 +45,10 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] float shieldRegenRate; // Rate of shield recovery
     [SerializeField] float shieldRegenDelay; // Delay before shield begins recovering
     [SerializeField] Renderer model; // Player model renderer for visual feedback (flashes, effects)
-
-    // --- Added for Abilities ---
-    [HideInInspector] public float damageBoost = 1f;
+    // ---------------------
+    // --- Player Boosts ---
+    // ---------------------
+    [HideInInspector] public float damageBoost = 1f; // Used by abilities for temporary damage increase
 
     Vector3 moveDir;
     Vector3 playerVel;
