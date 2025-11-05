@@ -300,17 +300,6 @@ public class enemyAI : MonoBehaviour, IDamage
         yield return new WaitForSeconds(1f); // Waits for jump to complete
         rb.isKinematic = true; // Restores kinematic state
         agent.enabled = true; // Re-enables NavMeshAgent for normal movement
-
-        // Applies stomp damage to any player caught within landing radius
-        Collider[] hits = Physics.OverlapSphere(transform.position, stompRadius);
-        foreach (Collider hit in hits)
-        {
-            IDamage dmg = hit.GetComponent<IDamage>();
-            if (dmg != null && hit.CompareTag("Player"))
-            {
-                dmg.takeDamage(leapDamage); // Applies damage from landing stomp
-            }
-        }
     }
     IEnumerator Dash()
     {
@@ -329,23 +318,6 @@ public class enemyAI : MonoBehaviour, IDamage
             elapsed += Time.deltaTime;
             transform.position = Vector3.Lerp(startPos, endPos, elapsed / dashDuration);
             yield return null;
-        }
-
-        // Detects players hit by dash impact
-        Collider[] hits = Physics.OverlapSphere(transform.position, 2f);
-        foreach (Collider hit in hits)
-        {
-            IDamage dmg = hit.GetComponent<IDamage>();
-            if (dmg != null && hit.CompareTag("Player"))
-            {
-                dmg.takeDamage(dashDamage); // Applies impact damage
-                Rigidbody playerRB = hit.GetComponent<Rigidbody>(); // Gets player’s Rigidbody for knockback
-                if (playerRB != null)
-                {
-                    Vector3 knockDir = (hit.transform.position - transform.position).normalized; // Finds direction away from enemy
-                    playerRB.AddForce(knockDir * dashKnockbackForce, ForceMode.Impulse); // Pushes player backward
-                }
-            }
         }
     }
 }
