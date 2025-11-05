@@ -67,6 +67,7 @@ public class playerController : MonoBehaviour, IDamage
     Vector3 moveDir; // Stores direction of movement
     Vector3 playerVel; // Stores vertical velocity (for jump / gravity)
     int jumpCount; // Tracks current jump count
+    int HPOrig; // Stores original HP for reference
     float shootTimer; // Timer to control firing rate
     float healthRegenTimer; // Timer for HP regeneration
     float shieldRegenTimer; // Timer for shield regeneration
@@ -89,6 +90,8 @@ public class playerController : MonoBehaviour, IDamage
     // Start initializes HP, shield, and visuals
     void Start()
     {
+        HPOrig = HP;
+        updatePlayerUI();
         HP = maxHP;
         shield = maxShield;
         energy = maxEnergy;
@@ -369,6 +372,7 @@ public class playerController : MonoBehaviour, IDamage
         }
 
         HP -= amount;
+        updatePlayerUI();
         healthRegenTimer = 0;
 
         if (model != null)
@@ -379,5 +383,10 @@ public class playerController : MonoBehaviour, IDamage
 
         if (HP <= 0)
             gamemanager.instance.youLose(); // Triggers game over
+    }
+
+    public void updatePlayerUI()
+    { 
+        gamemanager.instance.playerHPBar.fillAmount = (float)HP / maxHP;
     }
 }
