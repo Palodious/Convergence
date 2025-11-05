@@ -83,13 +83,18 @@ public class playerController : MonoBehaviour, IDamage
     }
     void Update()
     {
-        Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red);
+        Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red); // Shows firing direction
 
         shootTimer += Time.deltaTime;
+        dodgeTimer += Time.deltaTime;
 
-        movement();
-        sprint();
+        movement(); // Handles all basic movement inputs
+        sprint(); // Handles sprint start/stop input
+
+        handleHealthRegen(); // Restores HP gradually
+        handleShieldRegen(); // Restores shield gradually
     }
+
 
     void movement()
     {
