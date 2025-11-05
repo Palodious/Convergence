@@ -9,6 +9,10 @@ public class EffectPool : MonoBehaviour
     public GameObject prefab;
     public int initialSize = 6;
 
+    [SerializeField] AudioClip teleportStartSound;
+    [SerializeField] AudioClip teleportEndSound;
+
+
     private Queue<GameObject> pool = new Queue<GameObject>();
 
     void Awake()

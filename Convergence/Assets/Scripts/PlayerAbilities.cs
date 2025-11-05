@@ -31,6 +31,7 @@ public class playerAbilities : MonoBehaviour
     [SerializeField] float jumpDistance;
     [SerializeField] float jumpCooldown;
     [SerializeField] int jumpFlowCost;
+    [SerializeField] Transform effectSpawnPoint;
 
     // Timers
     float pulseTimer;
@@ -43,6 +44,7 @@ public class playerAbilities : MonoBehaviour
     float surgeEndTime;
     float originalSpeed;
     float originalDamageBoost = 1f;
+
 
     void Start()
     {
@@ -68,11 +70,12 @@ public class playerAbilities : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R) && collapseTimer >= collapseCooldown)
             StartCoroutine(RiftCollapse());
 
-        if (Input.GetKeyDown(KeyCode.F) && jumpTimer >= jumpCooldown)
+        if (Input.GetKeyDown(KeyCode.H) && jumpTimer >= jumpCooldown)
             RiftJump();
 
         if (isSurging && Time.time >= surgeEndTime)
             EndSurge();
+
     }
 
     IEnumerator RiftPulse()
@@ -126,6 +129,9 @@ public class playerAbilities : MonoBehaviour
 
     void RiftJump()
     {
+
+        EffectPool.Instance.Spawn(transform.position, Quaternion.identity);
+
         jumpTimer = 0;
         RaycastHit hit;
         Vector3 targetPos = transform.position + transform.forward * jumpDistance;
@@ -136,8 +142,10 @@ public class playerAbilities : MonoBehaviour
         }
 
         controller.GetComponent<CharacterController>().enabled = false;
-        transform.position = targetPos;
+        EffectPool.Instance?.Spawn(effectSpawnPoint.position, Quaternion.identity);
         controller.GetComponent<CharacterController>().enabled = true;
+
+        EffectPool.Instance?.Spawn(targetPos, Quaternion.identity);
     }
 }
 

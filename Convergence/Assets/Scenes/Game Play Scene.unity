@@ -288,7 +288,7 @@ MonoBehaviour:
   enemyMask:
     serializedVersion: 2
     m_Bits: 0
-  pulseDamage: 0
+  pulseDamage: 1
   pulseRange: 0
   pulseCooldown: 0
   pulseFlowCost: 0
@@ -303,9 +303,10 @@ MonoBehaviour:
   collapseFlowCost: 0
   collapseSlowTime: 0
   collapseSlowScale: 0
-  jumpDistance: 0
-  jumpCooldown: 0
-  jumpFlowCost: 0
+  jumpDistance: 10
+  jumpCooldown: 1
+  jumpFlowCost: 2
+  effectSpawnPoint: {fileID: 0}
 --- !u!1001 &1192288701
 PrefabInstance:
   m_ObjectHideFlags: 0
