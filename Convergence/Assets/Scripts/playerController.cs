@@ -433,6 +433,7 @@ public class playerController : MonoBehaviour, IDamage
 
         HP -= amount;
         updatePlayerUI();
+        StartCoroutine(screenFlashDamage());
         healthRegenTimer = 0;
 
         if (model != null)
@@ -449,5 +450,14 @@ public class playerController : MonoBehaviour, IDamage
     {
         if (gamemanager.instance != null && gamemanager.instance.playerHPBar != null)
             gamemanager.instance.playerHPBar.fillAmount = (float)HP / maxHP;
+    }
+
+    IEnumerator screenFlashDamage()
+    {
+        if (gamemanager.instance.playerDamageIndicator != null)
+            gamemanager.instance.playerDamageIndicator.gameObject.SetActive(true);
+        yield return new WaitForSeconds(0.1f);
+        if (gamemanager.instance.playerDamageIndicator != null)
+            gamemanager.instance.playerDamageIndicator.gameObject.SetActive(false);
     }
 }
