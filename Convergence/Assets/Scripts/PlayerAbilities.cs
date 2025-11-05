@@ -4,7 +4,7 @@ using System.Collections;
 public class playerAbilities : MonoBehaviour
 {
     [SerializeField] playerController controller;
-    [SerializeField] LayerMask Mask;
+    [SerializeField] LayerMask enemyMask;
 
     // Rift Pulse
     [SerializeField] int pulseDamage;
@@ -78,7 +78,7 @@ public class playerAbilities : MonoBehaviour
     IEnumerator RiftPulse()
     {
         pulseTimer = 0;
-        Collider[] hits = Physics.OverlapSphere(transform.position, pulseRange, Mask);
+        Collider[] hits = Physics.OverlapSphere(transform.position, pulseRange, enemyMask);
         foreach (Collider hit in hits)
         {
             IDamage dmg = hit.GetComponent<IDamage>();
@@ -111,7 +111,7 @@ public class playerAbilities : MonoBehaviour
     IEnumerator RiftCollapse()
     {
         collapseTimer = 0;
-        Collider[] hits = Physics.OverlapSphere(transform.position, collapseRadius, Mask);
+        Collider[] hits = Physics.OverlapSphere(transform.position, collapseRadius, enemyMask);
         foreach (Collider hit in hits)
         {
             IDamage dmg = hit.GetComponent<IDamage>();
