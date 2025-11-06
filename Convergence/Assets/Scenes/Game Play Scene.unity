@@ -515,6 +515,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 917046d92de302543add10dd4316627e, type: 3}
+--- !u!114 &565125183 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4645199402670229611, guid: 917046d92de302543add10dd4316627e, type: 3}
+  m_PrefabInstance: {fileID: 565125182}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 384562a45b881de47b41cb0bd36af9e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::playerController
 --- !u!1 &623099097
 GameObject:
   m_ObjectHideFlags: 0
@@ -1915,6 +1926,14 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 957247152}
+    - target: {fileID: 8514989215698104518, guid: 0a971b96e6712804199146ff00c85a1e, type: 3}
+      propertyPath: controller
+      value: 
+      objectReference: {fileID: 565125183}
+    - target: {fileID: 8514989215698104518, guid: 0a971b96e6712804199146ff00c85a1e, type: 3}
+      propertyPath: playerHPBar
+      value: 
+      objectReference: {fileID: 957247154}
     - target: {fileID: 8514989215698104518, guid: 0a971b96e6712804199146ff00c85a1e, type: 3}
       propertyPath: playerAmmoBar
       value: 
