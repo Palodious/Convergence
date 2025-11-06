@@ -2701,6 +2701,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6514366851511971998, guid: a1af159cbef9cd54794aaed2a3661fe9, type: 3}
+      propertyPath: pulsePrefab
+      value: 
+      objectReference: {fileID: 8974203713140315807, guid: 709b0bd6b0b625249a98409dd7a87343, type: 3}
+    - target: {fileID: 6514366851511971998, guid: a1af159cbef9cd54794aaed2a3661fe9, type: 3}
+      propertyPath: pulseStartSound
+      value: 
+      objectReference: {fileID: 8300000, guid: d998ba4ec3fda3a4db4f728a4c89229a, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
