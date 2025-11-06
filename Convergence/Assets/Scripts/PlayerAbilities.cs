@@ -128,21 +128,38 @@ public class playerAbilities : MonoBehaviour
 
     void RiftJump()
     {
-        jumpTimer = 0;
-        RaycastHit hit;
+        // reset cooldown timer and spend energy
+        jumpTimer = 0f;
+        controller.UseEnergy(jumpEnergyCost);
+
+        // spawn start VFX + start sound at player position
+        Vector3 startPos = controller.transform.position;
+        Quaternion startRot = controller.transform.rotation;
+        if (EffectPool.Instance != null)
+            EffectPool.Instance.Spawn(startPos, startRot, null);
+
+        // compute target position (forward dash)
         Vector3 targetPos = transform.position + transform.forward * jumpDistance;
 
-        // Check if something is in the way — stop before hitting it
-        if (Physics.Raycast(transform.position, transform.forward, out hit, jumpDistance))
+        // move player safely when using CharacterController
+        CharacterController cc = controller.Controller;
+        if (cc != null)
         {
-            targetPos = hit.point - transform.forward * 1f;
+            cc.enabled = false;               // disable to avoid CharacterController collision issues
+            transform.position = targetPos;   // teleport player
+            cc.enabled = true;                // re-enable controller
+        }
+        else
+        {
+            transform.position = targetPos;
         }
 
-        // Temporarily disable character controller to move the player
-        CharacterController cc = controller.GetComponent<CharacterController>();
-        cc.enabled = false;
-        transform.position = targetPos;
-        cc.enabled = true;
+        // spawn end VFX at landing position (no sound required if you keep only start sound)
+        if (EffectPool.Instance != null)
+            EffectPool.Instance.Spawn(targetPos, startRot, null);
+
+        // set jumpTimer so cooldown logic in Update works
+        jumpTimer = 0f;
     }
 }
 

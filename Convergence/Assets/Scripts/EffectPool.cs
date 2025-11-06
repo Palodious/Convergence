@@ -35,6 +35,10 @@ public class EffectPool : MonoBehaviour
         go.transform.SetPositionAndRotation(pos, rot);
         go.SetActive(true);
 
+        Debug.Log("EffectPool.Spawn called at pos " + pos + " prefab: " + (prefab != null ? prefab.name : "null"));
+
+        if (teleportStartSound != null) AudioSource.PlayClipAtPoint(teleportStartSound, pos, 1f);
+
         var ps = go.GetComponentInChildren<ParticleSystem>();
         if (ps != null)
         {
