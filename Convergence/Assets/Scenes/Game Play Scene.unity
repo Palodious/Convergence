@@ -1022,6 +1022,62 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1518540913}
   m_CullTransparentMesh: 1
+--- !u!1 &1686716220
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1686716221}
+  - component: {fileID: 1686716222}
+  m_Layer: 0
+  m_Name: Game Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1686716221
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1686716220}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 432.9807, y: -327.43674, z: 197.94127}
+  m_LocalScale: {x: 1.3123717, y: 1.3123717, z: 1.3123717}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1013014259}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1686716222
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1686716220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7497faa7f0a4b1249be498236abfdecd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::gamemanager
+  menuActive: {fileID: 0}
+  menuPause: {fileID: 0}
+  menuWin: {fileID: 0}
+  menuLose: {fileID: 0}
+  gameGoalCountText: {fileID: 0}
+  playerHPBar: {fileID: 0}
+  playerEnergyBar: {fileID: 0}
+  playerAmmoBar: {fileID: 0}
+  playerDamageIndicator: {fileID: 0}
+  player: {fileID: 0}
+  controller: {fileID: 0}
+  isPaused: 0
 --- !u!1 &1702018470
 GameObject:
   m_ObjectHideFlags: 0
@@ -3332,6 +3388,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5458094443922707328, guid: 0a971b96e6712804199146ff00c85a1e, type: 3}
       insertIndex: 3
       addedObject: {fileID: 4516464}
+    - targetCorrespondingSourceObject: {fileID: 5458094443922707328, guid: 0a971b96e6712804199146ff00c85a1e, type: 3}
+      insertIndex: 5
+      addedObject: {fileID: 1686716221}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0a971b96e6712804199146ff00c85a1e, type: 3}
 --- !u!4 &5774417643702641250
