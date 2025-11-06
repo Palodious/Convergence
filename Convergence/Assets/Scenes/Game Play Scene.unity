@@ -593,12 +593,6 @@ MonoBehaviour:
   surgeDamageBoost: 5
   surgeCooldown: 10
   surgeEnergyCost: 5
-  collapseDamage: 10
-  collapseRadius: 10
-  collapseCooldown: 5
-  collapseEnergyCost: 5
-  collapseSlowTime: 10
-  collapseSlowScale: 10
   jumpDistance: 10
   jumpCooldown: 1
   jumpEnergyCost: 0
@@ -1117,8 +1111,8 @@ Transform:
   m_GameObject: {fileID: 1702018470}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1049.89, y: 43.87, z: 126.47688}
-  m_LocalScale: {x: 3.4786, y: 3.5192573, z: 4.4151}
+  m_LocalPosition: {x: 1049.89, y: 47.71, z: 111.12}
+  m_LocalScale: {x: 97.218735, y: 21.753723, z: 4.4151}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
