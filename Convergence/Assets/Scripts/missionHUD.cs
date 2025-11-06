@@ -17,7 +17,8 @@ public class MissionHUD : MonoBehaviour
         if (Mission.instance != null)
         {
             // Initialize HUD with mission data
-            missionNameText.text = Mission.instance.missionName;
+            string missionName = Mission.instance.missionName;
+            missionNameText.text = missionName;
             UpdateObjectiveProgress(0, Mission.instance.totalObjectives);
 
             // Hide mission end panels initially

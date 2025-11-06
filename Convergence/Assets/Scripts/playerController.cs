@@ -70,6 +70,8 @@ public class playerController : MonoBehaviour, IDamage
     int jumpCount;
     int HPOrig; // Stores original HP for reference
     float shootTimer;
+    int energyOrig; // Stores original Energy for reference
+    int ammoOrig; // Stores original Ammo for reference
     float healthRegenTimer; // Timer for HP regeneration
     float shieldRegenTimer; // Timer for shield regeneration
     bool shieldBroken; // True when shield is depleted
@@ -93,6 +95,8 @@ public class playerController : MonoBehaviour, IDamage
     void Start()
     {
         HPOrig = HP;
+        energyOrig = (int)energy;
+        ammoOrig = ammo;
         if (gamemanager.instance != null)
             updatePlayerUI(); // safe null-checked
         HP = maxHP;
@@ -378,6 +382,7 @@ public class playerController : MonoBehaviour, IDamage
     public void UseEnergy(float amount)
     {
         energy -= amount;
+        updatePlayerUI();
         energyRegenTimer = 0f;
     }
 
@@ -409,6 +414,7 @@ public class playerController : MonoBehaviour, IDamage
     public void addAmmo(int value)
     {
         ammo += value;
+        updatePlayerUI();
         if (ammo > maxAmmo)
             ammo = maxAmmo;
     }
@@ -450,6 +456,10 @@ public class playerController : MonoBehaviour, IDamage
     {
         if (gamemanager.instance != null && gamemanager.instance.playerHPBar != null)
             gamemanager.instance.playerHPBar.fillAmount = (float)HP / maxHP;
+        if (gamemanager.instance != null && gamemanager.instance.playerEnergyBar != null)
+            gamemanager.instance.playerEnergyBar.fillAmount = (float)energy / maxEnergy;
+        if (gamemanager.instance != null && gamemanager.instance.playerAmmoBar != null)
+            gamemanager.instance.playerAmmoBar.fillAmount = (float)ammo / maxAmmo;
     }
     IEnumerator screenFlashDamage()
     {

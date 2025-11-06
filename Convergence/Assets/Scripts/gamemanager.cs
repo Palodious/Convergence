@@ -35,7 +35,8 @@ public class gamemanager : MonoBehaviour
         timeScaleOrig = Time.timeScale;
 
         player = GameObject.FindWithTag("Player");
-        controller = player.GetComponent<playerController>();
+        playerController playerController = player.GetComponent<playerController>();
+        controller = playerController;
     }
 
     // Update is called once per frame
