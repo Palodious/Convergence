@@ -1578,7 +1578,7 @@ GameObject:
   - component: {fileID: 7395934211629600437}
   - component: {fileID: 5570866525791927972}
   m_Layer: 0
-  m_Name: robot_metallic
+  m_Name: Mech
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
