@@ -113,6 +113,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "RiftJump",
+                    "type": "Button",
+                    "id": "cb46dc6f-bea7-4280-acf6-cc15130fc715",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -515,7 +524,7 @@
                 {
                     "name": "",
                     "id": "aa30c93b-5306-4f07-b028-fc661a0ba7a8",
-                    "path": "<Keyboard>/k",
+                    "path": "<Keyboard>/q",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -537,7 +546,7 @@
                 {
                     "name": "",
                     "id": "5925b1f9-9f33-4f74-9cd5-be0d94f30db4",
-                    "path": "<Keyboard>/j",
+                    "path": "<Keyboard>/e",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -559,11 +568,22 @@
                 {
                     "name": "",
                     "id": "72ca3ef5-78bb-4784-b5fc-e35a08230ec2",
-                    "path": "",
+                    "path": "<Keyboard>/r",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Collapse",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "41bd521c-df11-43b9-bab9-6af6d8e26475",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RiftJump",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
