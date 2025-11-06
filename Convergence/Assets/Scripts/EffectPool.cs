@@ -9,9 +9,6 @@ public class EffectPool : MonoBehaviour
     public GameObject prefab;
        
     [SerializeField] int initialRiftJumpPoolSize = 6;
-    [SerializeField] int initialPulsePoolSize = 9;
-    [SerializeField] GameObject pulsePrefab;      // assign Pulse_VFX prefab here
-    [SerializeField] AudioClip pulseStartSound;   // assign pulse SFX here
     [SerializeField] AudioClip teleportStartSound; //assign rift jump SFX here
 
     private Queue<GameObject> pool = new Queue<GameObject>();
@@ -94,8 +91,6 @@ public class EffectPool : MonoBehaviour
         // Play sound if given (or fallback to pool pulse sound if assigned and sfx null)
         if (sfx != null)
             AudioSource.PlayClipAtPoint(sfx, pos, sfxVolume);
-        else if (pulseStartSound != null)
-            AudioSource.PlayClipAtPoint(pulseStartSound, pos, sfxVolume);
 
         Destroy(go, lifeTime);
     }
