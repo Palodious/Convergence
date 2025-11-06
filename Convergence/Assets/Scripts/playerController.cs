@@ -19,8 +19,6 @@ public class playerController : MonoBehaviour, IDamage
     // -----------------------------
     [SerializeField] float slideSpeed; // Speed during slide
     [SerializeField] float slideDuration; // Duration of slide movement
-    [SerializeField] float dodgeDistance; // Distance covered during a dodge roll
-    [SerializeField] float dodgeCooldown; // Time before dodge can be used again
     [SerializeField] float glideGravity; // Gravity applied when gliding (lower for floaty effect)
     [SerializeField] float wallRunSpeed; // Speed while running along a wall
     [SerializeField] float wallRunDuration; // Maximum wall-run duration
@@ -76,11 +74,9 @@ public class playerController : MonoBehaviour, IDamage
     float shieldRegenTimer; // Timer for shield regeneration
     bool shieldBroken; // True when shield is depleted
     bool isSliding; // True while slide coroutine is active
-    bool isDodging; // True while dodge coroutine is active
     bool isWallRunning; // True while wall-run is active
     bool canWallRun = true; // Prevents instant re-wall-running
     bool isCrouching; // True when crouching
-    float dodgeTimer; // Timer for dodge cooldown
     float wallRunTimer; // Timer for wall-run duration
     bool isGliding; // Tracks if currently gliding
     Color colorOrig; // Stores original model color for feedback resets
@@ -113,7 +109,6 @@ public class playerController : MonoBehaviour, IDamage
         Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red); // Shows firing direction
 
         shootTimer += Time.deltaTime;
-        dodgeTimer += Time.deltaTime;
 
         movement(); // Handles all basic movement inputs
         sprint(); // Handles sprint start/stop input
