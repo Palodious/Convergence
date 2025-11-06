@@ -19,14 +19,6 @@ public class playerAbilities : MonoBehaviour
     [SerializeField] float surgeCooldown;
     [SerializeField] int surgeEnergyCost;
 
-    // Rift Collapse
-    [SerializeField] int collapseDamage;
-    [SerializeField] float collapseRadius;
-    [SerializeField] float collapseCooldown;
-    [SerializeField] int collapseEnergyCost;
-    [SerializeField] float collapseSlowTime;
-    [SerializeField] float collapseSlowScale;
-
     // Rift Jump
     [SerializeField] float jumpDistance;
     [SerializeField] float jumpCooldown;
@@ -35,7 +27,6 @@ public class playerAbilities : MonoBehaviour
     // Timers
     float pulseTimer;
     float surgeTimer;
-    float collapseTimer;
     float jumpTimer;
 
     // Surge state
@@ -57,7 +48,6 @@ public class playerAbilities : MonoBehaviour
     {
         pulseTimer += Time.deltaTime;
         surgeTimer += Time.deltaTime;
-        collapseTimer += Time.deltaTime;
         jumpTimer += Time.deltaTime;
 
         if (Input.GetKeyDown(KeyCode.Q) && pulseTimer >= pulseCooldown)
@@ -65,9 +55,6 @@ public class playerAbilities : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.E) && surgeTimer >= surgeCooldown)
             StartCoroutine(RiftSurge());
-
-        if (Input.GetKeyDown(KeyCode.R) && collapseTimer >= collapseCooldown)
-            StartCoroutine(RiftCollapse());
 
         if (Input.GetKeyDown(KeyCode.F) && jumpTimer >= jumpCooldown)
             RiftJump();
@@ -108,22 +95,6 @@ public class playerAbilities : MonoBehaviour
         isSurging = false;
         controller.Speed = originalSpeed;
         controller.damageBoost = originalDamageBoost;
-    }
-
-    IEnumerator RiftCollapse()
-    {
-        collapseTimer = 0;
-        Collider[] hits = Physics.OverlapSphere(transform.position, collapseRadius, enemyMask);
-        foreach (Collider hit in hits)
-        {
-            IDamage dmg = hit.GetComponent<IDamage>();
-            if (dmg != null)
-                dmg.takeDamage(collapseDamage);
-        }
-
-        Time.timeScale = collapseSlowScale;
-        yield return new WaitForSecondsRealtime(collapseSlowTime);
-        Time.timeScale = 1f;
     }
 
     void RiftJump()
