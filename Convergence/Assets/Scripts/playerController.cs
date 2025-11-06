@@ -69,19 +69,9 @@ public class playerController : MonoBehaviour, IDamage
     Vector3 playerVel;
     int jumpCount;
     int HPOrig; // Stores original HP for reference
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
     float shootTimer;
-=======
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
     int energyOrig; // Stores original Energy for reference
     int ammoOrig; // Stores original Ammo for reference
-    float shootTimer; 
->>>>>>> Stashed changes
     float healthRegenTimer; // Timer for HP regeneration
     float shieldRegenTimer; // Timer for shield regeneration
     bool shieldBroken; // True when shield is depleted
