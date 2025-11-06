@@ -451,7 +451,6 @@ public class playerController : MonoBehaviour, IDamage
         if (gamemanager.instance != null && gamemanager.instance.playerHPBar != null)
             gamemanager.instance.playerHPBar.fillAmount = (float)HP / maxHP;
     }
-
     IEnumerator screenFlashDamage()
     {
         if (gamemanager.instance.playerDamageIndicator != null)
