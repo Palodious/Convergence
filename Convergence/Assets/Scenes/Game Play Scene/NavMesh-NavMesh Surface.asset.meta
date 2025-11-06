@@ -2,7 +2,11 @@ fileFormatVersion: 2
 guid: 88b0c851162f88e4f9345c6194bf85cd
 NativeFormatImporter:
   externalObjects: {}
+<<<<<<< HEAD
   mainObjectFileID: 0
+=======
+  mainObjectFileID: 23800000
+>>>>>>> parent of fce34b8 (Merge branch 'main' into Dev)
   userData: 
   assetBundleName: 
   assetBundleVariant: 

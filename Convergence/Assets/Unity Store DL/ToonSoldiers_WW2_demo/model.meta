@@ -1,8 +1,14 @@
 fileFormatVersion: 2
 guid: 64fed3f25d5a2b84d8d894967f902fd3
 folderAsset: yes
+<<<<<<< HEAD
 DefaultImporter:
   externalObjects: {}
+=======
+timeCreated: 1489674252
+licenseType: Store
+DefaultImporter:
+>>>>>>> parent of fce34b8 (Merge branch 'main' into Dev)
   userData: 
   assetBundleName: 
   assetBundleVariant: 

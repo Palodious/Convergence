@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
+<<<<<<< HEAD
 public class PlayerAbilities : MonoBehaviour
 {
     [SerializeField] playerController controller;
@@ -170,10 +171,72 @@ public class PlayerAbilities : MonoBehaviour
 
         yield return new WaitForSeconds(surgeCooldown);
         canSurge = true;
+=======
+public class playerAbilities : MonoBehaviour
+{
+    [SerializeField] playerController controller;
+    [SerializeField] LayerMask enemyMask;
+
+    // Rift Surge
+    [SerializeField] float surgeDuration;
+    [SerializeField] float surgeSpeedBoost;
+    [SerializeField] float surgeDamageBoost;
+    [SerializeField] float surgeCooldown;
+    [SerializeField] int surgeEnergyCost;
+
+    // Rift Jump
+    [SerializeField] float jumpDistance;
+    [SerializeField] float jumpCooldown;
+    [SerializeField] int jumpEnergyCost;
+
+    // Timers
+    float surgeTimer;
+    float jumpTimer;
+
+    // Surge state
+    bool isSurging;
+    float surgeEndTime;
+    float originalSpeed;
+    float originalDamageBoost = 1f;
+
+    void Start()
+    {
+        if (controller == null)
+            controller = GetComponent<playerController>();
+
+        originalSpeed = controller.GetComponent<playerController>().Speed;
+    }
+    void Update()
+    {
+        surgeTimer += Time.deltaTime;
+        jumpTimer += Time.deltaTime;
+
+        if (Input.GetKeyDown(KeyCode.E) && surgeTimer >= surgeCooldown)
+            StartCoroutine(RiftSurge());
+
+        if (Input.GetKeyDown(KeyCode.F) && jumpTimer >= jumpCooldown)
+            RiftJump();
+
+        if (isSurging && Time.time >= surgeEndTime)
+            EndSurge();
+    }
+    IEnumerator RiftSurge()
+    {
+        surgeTimer = 0;
+        isSurging = true;
+        surgeEndTime = Time.time + surgeDuration;
+
+        controller.Speed = originalSpeed * surgeSpeedBoost;
+        controller.damageBoost = surgeDamageBoost;
+
+        yield return new WaitForSeconds(surgeDuration);
+        EndSurge();
+>>>>>>> parent of fce34b8 (Merge branch 'main' into Dev)
     }
     void EndSurge()
     {
         isSurging = false;
+<<<<<<< HEAD
 
         if (controller != null)
         {
@@ -209,4 +272,39 @@ public class PlayerAbilities : MonoBehaviour
     }
 
 
+=======
+        controller.Speed = originalSpeed;
+        controller.damageBoost = originalDamageBoost;
+    }
+    void RiftJump()
+    {
+        // reset cooldown timer and spend energy
+        jumpTimer = 0f;
+        controller.UseEnergy(jumpEnergyCost);
+        // spawn start VFX + start sound at player position
+        Vector3 startPos = controller.transform.position;
+        Quaternion startRot = controller.transform.rotation;
+        if (EffectPool.Instance != null)
+            EffectPool.Instance.Spawn(startPos, startRot, null);
+        // compute target position (forward dash)
+        Vector3 targetPos = transform.position + transform.forward * jumpDistance;
+        // move player safely when using CharacterController
+        CharacterController cc = controller.Controller;
+        if (cc != null)
+        {
+            cc.enabled = false;               // disable to avoid CharacterController collision issues
+            transform.position = targetPos;   // teleport player
+            cc.enabled = true;                // re-enable controller
+        }
+        else
+        {
+            transform.position = targetPos;
+        }
+        // spawn end VFX at landing position (no sound required if you keep only start sound)
+        if (EffectPool.Instance != null)
+            EffectPool.Instance.Spawn(targetPos, startRot, null);
+        // set jumpTimer so cooldown logic in Update works
+        jumpTimer = 0f;
+    }
+>>>>>>> parent of fce34b8 (Merge branch 'main' into Dev)
 }
