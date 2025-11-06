@@ -9,7 +9,7 @@ EditorBuildSettings:
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
-    path: Assets/PreFabs/Game Menu.unity
+    path: Assets/Scenes/Game Menu.unity
     guid: 7190ccf0a716a664abb7b3c37148eb64
   - enabled: 1
     path: Assets/Scenes/Game Play Scene.unity
