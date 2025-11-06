@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 
 public class gamemanager : MonoBehaviour
@@ -12,6 +13,10 @@ public class gamemanager : MonoBehaviour
     [SerializeField] GameObject menuLose;
 
     public TMP_Text gameGoalCountText;
+    public Image playerHPBar;
+    public Image playerEnergyBar;
+    public Image playerAmmoBar;
+    public Image playerDamageIndicator;
 
     public GameObject player;
     public playerController controller;
@@ -20,7 +25,8 @@ public class gamemanager : MonoBehaviour
 
     float timeScaleOrig;
 
-    int gameGoalCount;
+    int totalObjectives = 1; 
+    int completedObjectives = 0;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
@@ -29,7 +35,9 @@ public class gamemanager : MonoBehaviour
         timeScaleOrig = Time.timeScale;
 
         player = GameObject.FindWithTag("Player");
-        controller = player.GetComponent<playerController>();
+        playerController playerController1 = player.GetComponent<playerController>();
+        playerController playerController = playerController1;
+        controller = playerController;
     }
 
     // Update is called once per frame
@@ -68,24 +76,39 @@ public class gamemanager : MonoBehaviour
         menuActive = null;
     }
 
-    public void updateGameGoal(int amount)
+    public void RegisterObjectiveComplete()
     {
-        gameGoalCount += amount;
-        gameGoalCountText.text = gameGoalCount.ToString("F0");
+        completedObjectives++;
+        UpdateGoalUI();
 
-        if (gameGoalCount <= 0)
+        if (completedObjectives >= totalObjectives)
         {
-            // You win!!!
-            statePause();
-            menuActive = menuWin;
-            menuActive.SetActive(true);
+            OnMissionComplete(true);
         }
+    }
+
+    void UpdateGoalUI()
+    {
+        gameGoalCountText.text = $"{completedObjectives} / {totalObjectives}";
+    }
+
+    void OnMissionComplete(bool success)
+    {
+        statePause();
+
+        if (success)
+        {
+            menuActive = menuWin;
+        }
+        else
+        {
+            menuActive = menuLose;
+        }
+        menuActive.SetActive(true);
     }
 
     public void youLose()
     {
-        statePause();
-        menuActive = menuLose;
-        menuActive.SetActive(true);
+        OnMissionComplete(false);
     }
 }
