@@ -71,8 +71,11 @@ public class playerController : MonoBehaviour, IDamage
     int HPOrig; // Stores original HP for reference
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     float shootTimer;
 =======
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
     int energyOrig; // Stores original Energy for reference
