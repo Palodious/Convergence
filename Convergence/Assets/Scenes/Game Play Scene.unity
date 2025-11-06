@@ -294,20 +294,20 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   pulseDamage: 3
-  pulseRange: 0
-  pulseCooldown: 0
-  pulseEnergyCost: 0
-  surgeDuration: 0
-  surgeSpeedBoost: 0
-  surgeDamageBoost: 0
-  surgeCooldown: 0
-  surgeEnergyCost: 0
-  collapseDamage: 0
-  collapseRadius: 0
-  collapseCooldown: 0
-  collapseEnergyCost: 0
-  collapseSlowTime: 0
-  collapseSlowScale: 0
+  pulseRange: 10
+  pulseCooldown: 5
+  pulseEnergyCost: 5
+  surgeDuration: 6
+  surgeSpeedBoost: 5
+  surgeDamageBoost: 5
+  surgeCooldown: 10
+  surgeEnergyCost: 5
+  collapseDamage: 10
+  collapseRadius: 10
+  collapseCooldown: 5
+  collapseEnergyCost: 5
+  collapseSlowTime: 10
+  collapseSlowScale: 10
   jumpDistance: 10
   jumpCooldown: 1
   jumpEnergyCost: 0
