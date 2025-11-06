@@ -7,11 +7,12 @@ public class EffectPool : MonoBehaviour
 {
     public static EffectPool Instance;
     public GameObject prefab;
-    public int initialSize = 6;
-
-    [SerializeField] AudioClip teleportStartSound;
-    [SerializeField] AudioClip teleportEndSound;
-
+       
+    [SerializeField] int initialRiftJumpPoolSize = 6;
+    [SerializeField] int initialPulsePoolSize = 9;
+    [SerializeField] GameObject pulsePrefab;      // assign Pulse_VFX prefab here
+    [SerializeField] AudioClip pulseStartSound;   // assign pulse SFX here
+    [SerializeField] AudioClip teleportStartSound; //assign rift jump SFX here
 
     private Queue<GameObject> pool = new Queue<GameObject>();
 
@@ -20,7 +21,7 @@ public class EffectPool : MonoBehaviour
         if (Instance == null) Instance = this;
         else { Destroy(gameObject); return; }
 
-        for (int i = 0; i < initialSize; i++)
+        for (int i = 0; i < initialRiftJumpPoolSize; i++)
         {
             var go = Instantiate(prefab, transform);
             go.SetActive(false);
@@ -35,13 +36,14 @@ public class EffectPool : MonoBehaviour
         go.transform.SetPositionAndRotation(pos, rot);
         go.SetActive(true);
 
-        Debug.Log("EffectPool.Spawn called at pos " + pos + " prefab: " + (prefab != null ? prefab.name : "null"));
-
-        if (teleportStartSound != null) AudioSource.PlayClipAtPoint(teleportStartSound, pos, 1f);
+        // play start sound once (if assigned)
+        if (teleportStartSound != null)
+            AudioSource.PlayClipAtPoint(teleportStartSound, pos, 1f);
 
         var ps = go.GetComponentInChildren<ParticleSystem>();
         if (ps != null)
         {
+            ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
             ps.Clear(true);
             ps.Play(true);
             StartCoroutine(ReturnWhenFinished(go));
@@ -61,9 +63,46 @@ public class EffectPool : MonoBehaviour
         return go;
     }
 
+    // One-shot spawn for different VFX prefabs + separate SFX (no pooling)
+    public void SpawnOneShot(GameObject prefabOneShot, Vector3 pos, Quaternion rot, AudioClip sfx = null, float lifeTime = 2f, float sfxVolume = 1f)
+    {
+        if (prefabOneShot == null)
+        {
+            Debug.LogWarning("EffectPool.SpawnOneShot called with null prefabOneShot");
+            return;
+        }
+
+        GameObject go = Instantiate(prefabOneShot, pos, rot);
+
+        // Start ParticleSystems cleanly
+        var particleSystems = go.GetComponentsInChildren<ParticleSystem>(true);
+        foreach (var ps in particleSystems)
+        {
+            ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            ps.Clear(true);
+            ps.Play(true);
+        }
+
+        // Start VisualEffect if present
+        var vfxs = go.GetComponentsInChildren<VisualEffect>(true);
+        foreach (var vfx in vfxs)
+        {
+            vfx.Stop();
+            vfx.Play();
+        }
+
+        // Play sound if given (or fallback to pool pulse sound if assigned and sfx null)
+        if (sfx != null)
+            AudioSource.PlayClipAtPoint(sfx, pos, sfxVolume);
+        else if (pulseStartSound != null)
+            AudioSource.PlayClipAtPoint(pulseStartSound, pos, sfxVolume);
+
+        Destroy(go, lifeTime);
+    }
+
     private IEnumerator ReturnWhenFinished(GameObject go)
     {
-        var systems = go.GetComponentsInChildren<ParticleSystem>();
+        var systems = go.GetComponentsInChildren<ParticleSystem>(true);
         while (true)
         {
             bool anyAlive = false;
@@ -82,6 +121,21 @@ public class EffectPool : MonoBehaviour
 
     private void Return(GameObject go)
     {
+        // Ensure no residual emission when pooled
+        var particleSystems = go.GetComponentsInChildren<ParticleSystem>(true);
+        foreach (var ps in particleSystems)
+        {
+            ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            ps.Clear(true);
+        }
+
+        var vfxs = go.GetComponentsInChildren<VisualEffect>(true);
+        foreach (var vfx in vfxs)
+        {
+            vfx.Stop();
+            // vfx.Reinit(); // optional if you need a full reset next play
+        }
+
         go.SetActive(false);
         go.transform.SetParent(transform);
         pool.Enqueue(go);

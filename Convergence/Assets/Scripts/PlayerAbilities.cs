@@ -11,6 +11,8 @@ public class playerAbilities : MonoBehaviour
     [SerializeField] float pulseRange;
     [SerializeField] float pulseCooldown;
     [SerializeField] int pulseEnergyCost;
+    [SerializeField] GameObject pulsePrefab;
+    [SerializeField] AudioClip pulseSound;
 
     // Rift Surge
     [SerializeField] float surgeDuration;
@@ -22,7 +24,7 @@ public class playerAbilities : MonoBehaviour
     // Rift Jump
     [SerializeField] float jumpDistance;
     [SerializeField] float jumpCooldown;
-    [SerializeField] int jumpEnergyCost;
+    [SerializeField] int jumpEnergyCost;     
 
     // Timers
     float pulseTimer;
@@ -66,7 +68,23 @@ public class playerAbilities : MonoBehaviour
 
     IEnumerator RiftPulse()
     {
-        pulseTimer = 0;
+        pulseTimer = 0f;
+        controller.UseEnergy(pulseEnergyCost);
+
+        // spawn a dedicated pulse VFX and play a dedicated pulse SFX
+        Vector3 vfxPos = controller.transform.position + Vector3.up * 0.5f;
+        Quaternion vfxRot = controller.transform.rotation;
+
+        if (EffectPool.Instance != null)
+        {
+            // prefer playerAbilities' pulsePrefab/pulseSound; fallback to pool's onboard ones
+            EffectPool.Instance.SpawnOneShot(pulsePrefab != null ? pulsePrefab : EffectPool.Instance.prefab,
+                                             vfxPos, vfxRot,
+                                             pulseSound != null ? pulseSound : null,
+                                             1.5f, 1f);
+        }
+
+        // damage handling
         Collider[] hits = Physics.OverlapSphere(transform.position, pulseRange, enemyMask);
         foreach (Collider hit in hits)
         {
@@ -74,6 +92,7 @@ public class playerAbilities : MonoBehaviour
             if (dmg != null)
                 dmg.takeDamage(pulseDamage);
         }
+
         yield return null;
     }
 
