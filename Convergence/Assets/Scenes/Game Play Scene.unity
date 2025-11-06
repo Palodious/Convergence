@@ -154,8 +154,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 326.21362, y: -116.50488}
-  m_SizeDelta: {x: 526, y: 30}
+  m_AnchoredPosition: {x: 274, y: -69.29126}
+  m_SizeDelta: {x: 526, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &4516465
 MonoBehaviour:
@@ -230,7 +230,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 526, y: 30}
+  m_SizeDelta: {x: 526, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &24366901
 MonoBehaviour:
@@ -757,7 +757,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 326.21362, y: -86.21362}
+  m_AnchoredPosition: {x: 274, y: -39}
   m_SizeDelta: {x: 526, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &957247154
@@ -914,8 +914,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 326.21362, y: -146.79626}
-  m_SizeDelta: {x: 526, y: 30}
+  m_AnchoredPosition: {x: 274, y: -99.58264}
+  m_SizeDelta: {x: 526, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1518540915
 MonoBehaviour:
@@ -955,6 +955,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1518540913}
   m_CullTransparentMesh: 1
+--- !u!114 &1535922109 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4645199402670229611, guid: 917046d92de302543add10dd4316627e, type: 3}
+  m_PrefabInstance: {fileID: 565125182}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 384562a45b881de47b41cb0bd36af9e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::playerController
 --- !u!1 &1790099910
 GameObject:
   m_ObjectHideFlags: 0
@@ -1914,7 +1925,15 @@ PrefabInstance:
     - target: {fileID: 8514989215698104518, guid: 0a971b96e6712804199146ff00c85a1e, type: 3}
       propertyPath: player
       value: 
-      objectReference: {fileID: 957247152}
+      objectReference: {fileID: 0}
+    - target: {fileID: 8514989215698104518, guid: 0a971b96e6712804199146ff00c85a1e, type: 3}
+      propertyPath: controller
+      value: 
+      objectReference: {fileID: 1535922109}
+    - target: {fileID: 8514989215698104518, guid: 0a971b96e6712804199146ff00c85a1e, type: 3}
+      propertyPath: playerHPBar
+      value: 
+      objectReference: {fileID: 957247154}
     - target: {fileID: 8514989215698104518, guid: 0a971b96e6712804199146ff00c85a1e, type: 3}
       propertyPath: playerAmmoBar
       value: 
