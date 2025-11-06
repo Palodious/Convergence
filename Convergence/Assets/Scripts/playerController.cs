@@ -3,9 +3,6 @@ using UnityEngine;
 
 public class playerController : MonoBehaviour, IDamage
 {
-    // -------------------------------
-    // --- Player Movement Settings ---
-    // -------------------------------
     [SerializeField] CharacterController controller;
     [SerializeField] LayerMask ignoreLayer;
     [SerializeField] float speed;
@@ -14,31 +11,19 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] float jumpSpeed;
     [SerializeField] int maxJumps;
     [SerializeField] float gravity;
-    // -----------------------------
-    // --- Advanced Movement ---
-    // -----------------------------
-    [SerializeField] float slideSpeed; // Speed during slide
-    [SerializeField] float slideDuration; // Duration of slide movement
+
     [SerializeField] float glideGravity; // Gravity applied when gliding (lower for floaty effect)
-    [SerializeField] float wallRunSpeed; // Speed while running along a wall
-    [SerializeField] float wallRunDuration; // Maximum wall-run duration
-    [SerializeField] float wallRunCooldown; // Time before wall-run can be reused
-    [SerializeField] float wallCheckDistance; // Distance to check for wall proximity (raycast)
     [SerializeField] float crouchSpeedMod = 0.5f; // Movement speed reduction while crouched
     [SerializeField] float crouchHeight = 1.0f; // Height of character while crouched
     float originalHeight; // Stores original standing height
-    // --------------------------
-    // --- Combat & Shooting ---
-    // --------------------------
+
     [SerializeField] int shootDamage;
     [SerializeField] float shootDist;
     [SerializeField] float shootRate;
     [SerializeField] int ammo; // Current ammo
     [SerializeField] int maxAmmo; // Maximum ammo capacity
     [SerializeField] float shootEnergyCost = 5f; // Energy cost per shot (adjustable in Inspector)
-    // ------------------------
-    // --- Health & Shields ---
-    // ------------------------
+
     [SerializeField] int HP;
     [SerializeField] int maxHP;
     [SerializeField] float healthRegenRate; // Rate of HP restoration
@@ -48,21 +33,15 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] float shieldRegenRate; // Rate of shield recovery
     [SerializeField] float shieldRegenDelay; // Delay before shield begins recovering
     [SerializeField] Renderer model; // Player model renderer for visual feedback (flashes, effects)
-    // ------------------------
-    // --- Energy System ---
-    // ------------------------
+
     [SerializeField] float energy; // Current energy amount
     [SerializeField] float maxEnergy = 100f; // Maximum energy capacity
     [SerializeField] float energyRegenRate = 15f; // Rate of energy regeneration per second
     [SerializeField] float energyRegenDelay = 2f; // Delay before energy starts regenerating
     float energyRegenTimer; // Timer for energy regeneration
-    // ---------------------
-    // --- Player Boosts ---
-    // ---------------------
+ 
     [HideInInspector] public float damageBoost = 1f; // Used by abilities for temporary damage increase
-    // ------------------------
-    // --- Internal Tracking ---
-    // ------------------------
+
     Vector3 moveDir;
     Vector3 playerVel;
     int jumpCount;
@@ -73,16 +52,10 @@ public class playerController : MonoBehaviour, IDamage
     float healthRegenTimer; // Timer for HP regeneration
     float shieldRegenTimer; // Timer for shield regeneration
     bool shieldBroken; // True when shield is depleted
-    bool isSliding; // True while slide coroutine is active
-    bool isWallRunning; // True while wall-run is active
-    bool canWallRun = true; // Prevents instant re-wall-running
     bool isCrouching; // True when crouching
-    float wallRunTimer; // Timer for wall-run duration
     bool isGliding; // Tracks if currently gliding
     Color colorOrig; // Stores original model color for feedback resets
-    // -------------------
-    // --- Properties ---
-    // -------------------
+
     public CharacterController Controller => controller;
     public float Speed { get => speed; set => speed = value; }
     public int HPValue { get => HP; set => HP = value; }
@@ -103,7 +76,6 @@ public class playerController : MonoBehaviour, IDamage
         if (model != null)
             colorOrig = model.material.color; // Store original model color
     }
-
     void Update()
     {
         Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward * shootDist, Color.red); // Shows firing direction
@@ -113,13 +85,10 @@ public class playerController : MonoBehaviour, IDamage
         movement(); // Handles all basic movement inputs
         sprint(); // Handles sprint start/stop input
 
-        // --- Shooting ---
         if (Input.GetMouseButton(0) && shootTimer >= shootRate)
         {
             shoot();
         }
-
-        // --- Glide Activation ---
         if (!controller.isGrounded)
         {
             if (Input.GetKeyDown(KeyCode.G))
@@ -139,7 +108,6 @@ public class playerController : MonoBehaviour, IDamage
 
     void movement()
     {
-        // --- Gravity & Ground Check ---
         if (controller.isGrounded)
         {
             if (playerVel.y < 0)
@@ -148,7 +116,6 @@ public class playerController : MonoBehaviour, IDamage
         }
         else
         {
-            // --- Gravity / Glide Control ---
             // Applies normal gravity unless gliding (press G mid-air)
             if (isGliding)
                 playerVel.y = Mathf.Max(playerVel.y - (glideGravity * 0.2f * Time.deltaTime), -glideGravity); // gentle descent while gliding
@@ -156,22 +123,17 @@ public class playerController : MonoBehaviour, IDamage
                 playerVel.y -= gravity * Time.deltaTime; // regular fall speed
         }
 
-        // --- Directional Movement ---
         moveDir = Input.GetAxis("Horizontal") * transform.right + Input.GetAxis("Vertical") * transform.forward;
         controller.Move(moveDir * speed * Time.deltaTime);
 
         jump(); // Handle jump input
         controller.Move(playerVel * Time.deltaTime); // Apply vertical motion (jump / gravity)
 
-        // --- Advanced Movement Inputs ---
-        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.C) && !isSliding && controller.isGrounded)
-            StartCoroutine(PerformSlide()); // Slide when holding shift + crouch
-        else if (Input.GetKey(KeyCode.C))
+        if (Input.GetKey(KeyCode.C))
             crouch(); // Hold C to crouch
         else if (Input.GetKeyUp(KeyCode.C))
             uncrouch(); // Release C to stand
 
-        // --- Glide Activation ---
         if (!controller.isGrounded)
         {
             if (Input.GetKeyDown(KeyCode.G))
@@ -183,12 +145,7 @@ public class playerController : MonoBehaviour, IDamage
         {
             StopGlide(); // Automatically stop glide upon landing
         }
-
-        // --- Wall Running ---
-        if (!isWallRunning && canWallRun)
-            CheckWallRun(); // Detect and initiate wall run
     }
-
 
     void sprint()
     {
@@ -201,10 +158,9 @@ public class playerController : MonoBehaviour, IDamage
 
     void jump()
     {
-        // Handles jumping logic, including multiple jumps
         if (Input.GetButtonDown("Jump") && jumpCount < maxJumps)
         {
-            // Give a strong upward push
+            // Allows you to jump as high as you want
             playerVel.y = jumpSpeed * jumpHeight;
             jumpCount++;
         }
@@ -236,11 +192,11 @@ public class playerController : MonoBehaviour, IDamage
         if (ammo <= 0 || !CanUseEnergy(shootEnergyCost)) return; // Prevent fire if out of ammo or energy
         UseEnergy(shootEnergyCost);
 
-        shootTimer = 0; // Resets cooldown
-        ammo--;         // Consume one round
+        shootTimer = 0;
+        ammo--;
 
         RaycastHit hit;
-        // Fires ray from camera forward
+
         if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
         {
             Debug.Log(hit.collider.name); // Logs hit object name
@@ -248,24 +204,6 @@ public class playerController : MonoBehaviour, IDamage
             if (dmg != null)
                 dmg.takeDamage((int)(shootDamage * damageBoost)); // Applies modified damage if boost active
         }
-    }
-
-    IEnumerator PerformSlide()
-    {
-        isSliding = true; // Locks slide state
-        float elapsed = 0f;
-
-        Vector3 slideDir = moveDir.normalized;
-        if (slideDir == Vector3.zero) slideDir = transform.forward; // Defaults to facing direction
-
-        while (elapsed < slideDuration)
-        {
-            elapsed += Time.deltaTime;
-            controller.Move(slideDir * slideSpeed * Time.deltaTime);
-            yield return null;
-        }
-
-        isSliding = false; // Ends slide state
     }
 
     void StartGlide()
@@ -291,38 +229,6 @@ public class playerController : MonoBehaviour, IDamage
             controller.Move(playerVel * Time.deltaTime);
             yield return null;
         }
-    }
-
-    void CheckWallRun()
-    {
-        RaycastHit leftHit, rightHit;
-
-        // Casts rays on both sides to detect walls
-        bool leftWall = Physics.Raycast(transform.position, -transform.right, out leftHit, wallCheckDistance);
-        bool rightWall = Physics.Raycast(transform.position, transform.right, out rightHit, wallCheckDistance);
-
-        if (leftWall) StartCoroutine(PerformWallRun(leftHit.normal));
-        else if (rightWall) StartCoroutine(PerformWallRun(rightHit.normal));
-    }
-
-    IEnumerator PerformWallRun(Vector3 wallNormal)
-    {
-        isWallRunning = true;
-        canWallRun = false;
-        wallRunTimer = 0f;
-
-        while (wallRunTimer < wallRunDuration && !controller.isGrounded)
-        {
-            wallRunTimer += Time.deltaTime;
-            Vector3 alongWall = Vector3.Cross(wallNormal, Vector3.up);
-            controller.Move(alongWall * wallRunSpeed * Time.deltaTime);
-            playerVel.y = 0;
-            yield return null;
-        }
-
-        isWallRunning = false;
-        yield return new WaitForSeconds(wallRunCooldown);
-        canWallRun = true;
     }
 
     void handleHealthRegen()
