@@ -20,7 +20,7 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] Transform shootPOS;
 
     [SerializeField] bool canMelee; // Enables or disables melee attacks from Inspector
-    [SerializeField] GameObject meleePrefab; // Prefab for melee attack
+    [SerializeField] GameObject melee; // Prefab for melee attack
     [SerializeField] float meleeRate; // Rate between melee attacks
     [SerializeField] float meleeRange; // Distance required to use melee
     [SerializeField] Transform meleePOS; // Spawn point for melee attacks
@@ -42,6 +42,7 @@ public class enemyAI : MonoBehaviour, IDamage
     bool shieldBroken; // Checks if shield has been broken
     float shieldTimer; // Timer for shield regen delay
 
+    [SerializeField] bool canPatrol = true;
     [SerializeField] Transform[] patrolPoints; // Array of patrol points
     int patrolIndex; // Keeps track of which point it’s moving toward
     bool isPatrolling; // Enables or disables patrol mode
@@ -52,7 +53,7 @@ public class enemyAI : MonoBehaviour, IDamage
         stoppingDistOrig = agent.stoppingDistance;
 
         shieldHP = maxShield; // Sets shield to max value on start
-        isPatrolling = patrolPoints != null && patrolPoints.Length > 0; // Enables patrol if points exist
+        isPatrolling = canPatrol && patrolPoints != null && patrolPoints.Length > 0; // Enables patrol if points exist and toggle is on
     }
     void Update()
     {
@@ -183,10 +184,12 @@ public class enemyAI : MonoBehaviour, IDamage
     void Melee()
     {
         meleeTimer = 0; // Resets melee cooldown timer
-        Instantiate(meleePrefab, meleePOS.position, meleePOS.rotation); // Spawns melee hitbox prefab
+        Instantiate(melee, meleePOS.position, meleePOS.rotation); // Spawns melee hitbox prefab
     }
     void Patrol()
     {
+        // Prevents errors if patrol points are missing or empty
+        if (patrolPoints == null || patrolPoints.Length == 0) return;
         // Moves between patrol points if there are assigned points
         if (!agent.pathPending && agent.remainingDistance < 0.5f)
         {

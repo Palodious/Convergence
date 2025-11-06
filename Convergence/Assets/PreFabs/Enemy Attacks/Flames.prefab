@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 5134188331545677114}
   - component: {fileID: 7690241884291415516}
-  - component: {fileID: 281731078060810294}
   - component: {fileID: 2110795195314288803}
   - component: {fileID: 3937273686001583740}
+  - component: {fileID: 6501717530772946140}
   m_Layer: 0
   m_Name: Flames
   m_TagString: Untagged
@@ -51,31 +51,8 @@ MonoBehaviour:
   rb: {fileID: 2110795195314288803}
   damageAmount: 10
   damageRate: 0.25
-  speed: 15
-  destroyTime: 3
---- !u!136 &281731078060810294
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2041587132576922174}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5000001
-  m_Height: 2.25
-  m_Direction: 1
-  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
+  speed: 25
+  destroyTime: 2
 --- !u!54 &2110795195314288803
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -102,7 +79,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 2
+  m_CollisionDetection: 1
 --- !u!96 &3937273686001583740
 TrailRenderer:
   serializedVersion: 3
@@ -213,3 +190,24 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
+--- !u!135 &6501717530772946140
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2041587132576922174}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.5
+  m_Center: {x: -986.3473, y: -94.32584, z: 34.74248}
