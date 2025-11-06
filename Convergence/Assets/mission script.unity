@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 53419723}
   - component: {fileID: 53419722}
   m_Layer: 5
-  m_Name: PlayerHP bar
+  m_Name: PlayerEnergy bar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -206,7 +206,7 @@ GameObject:
   - component: {fileID: 155394397}
   - component: {fileID: 155394396}
   m_Layer: 5
-  m_Name: PlayerHP bar
+  m_Name: PlayerAmmo bar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -764,7 +764,7 @@ MonoBehaviour:
   menuWin: {fileID: 0}
   menuLose: {fileID: 0}
   gameGoalCountText: {fileID: 0}
-  playerHPBar: {fileID: 1182578670}
+  playerHPBar: {fileID: 53419722}
   playerDamageIndicator: {fileID: 1841885830}
   player: {fileID: 0}
   controller: {fileID: 0}
