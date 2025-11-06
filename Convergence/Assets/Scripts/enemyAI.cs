@@ -54,7 +54,6 @@ public class enemyAI : MonoBehaviour, IDamage
         shieldHP = maxShield; // Sets shield to max value on start
         isPatrolling = patrolPoints != null && patrolPoints.Length > 0; // Enables patrol if points exist
     }
-
     void Update()
     {
         shootTimer += Time.deltaTime;
@@ -73,7 +72,6 @@ public class enemyAI : MonoBehaviour, IDamage
             {
                 Melee();
             }
-
             // Shoot when farther than melee range
             if (canShoot && shootTimer >= shootRate && distToPlayer > meleeRange)
             {
@@ -85,10 +83,8 @@ public class enemyAI : MonoBehaviour, IDamage
             agent.stoppingDistance = 0;
             Patrol(); // Moves between patrol points when player not detected
         }
-
         ShieldRegen(); // Handles shield regeneration when possible
     }
-
     bool canSeePlayer()
     {
         playerDir = gamemanager.instance.player.transform.position - headPos.position;
@@ -118,13 +114,11 @@ public class enemyAI : MonoBehaviour, IDamage
         }
         return false;
     }
-
     void faceTarget()
     {
         Quaternion rot = Quaternion.LookRotation(new Vector3(playerDir.x, 0, playerDir.z));
         transform.rotation = Quaternion.Lerp(transform.rotation, rot, faceTargetSpeed * Time.deltaTime);
     }
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
@@ -132,7 +126,6 @@ public class enemyAI : MonoBehaviour, IDamage
             playerInTrigger = true;
         }
     }
-
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player"))
@@ -140,7 +133,6 @@ public class enemyAI : MonoBehaviour, IDamage
             playerInTrigger = false;
         }
     }
-
     public void takeDamage(int amount)
     {
         if (shieldHP > 0)
@@ -156,7 +148,6 @@ public class enemyAI : MonoBehaviour, IDamage
             {
                 StartCoroutine(flashShield()); // Flashes when shield takes damage
             }
-
             shieldTimer = 0; // Resets shield regen timer
             return;
         }
@@ -172,33 +163,28 @@ public class enemyAI : MonoBehaviour, IDamage
             StartCoroutine(flashRed());
         }
     }
-
     IEnumerator flashRed()
     {
         model.material.color = Color.red;
         yield return new WaitForSeconds(0.1f);
         model.material.color = colorOrig;
     }
-
     IEnumerator flashShield()
     {
         model.material.color = Color.yellow; // Flashes yellow when shield absorbs hit
         yield return new WaitForSeconds(0.1f);
         model.material.color = colorOrig;
     }
-
     void Shoot()
     {
         shootTimer = 0; // Resets shoot cooldown timer
         Instantiate(projectile, shootPOS.position, transform.rotation); // Spawns projectile prefab from shoot position
     }
-
     void Melee()
     {
         meleeTimer = 0; // Resets melee cooldown timer
         Instantiate(meleePrefab, meleePOS.position, meleePOS.rotation); // Spawns melee hitbox prefab
     }
-
     void Patrol()
     {
         // Moves between patrol points if there are assigned points
@@ -208,7 +194,6 @@ public class enemyAI : MonoBehaviour, IDamage
             agent.SetDestination(patrolPoints[patrolIndex].position); // Updates next patrol target position
         }
     }
-
     void ShieldRegen()
     {
         // Regenerates shield over time if not broken

@@ -22,7 +22,6 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] float shootRate;
     [SerializeField] int ammo; // Current ammo
     [SerializeField] int maxAmmo; // Maximum ammo capacity
-    [SerializeField] float shootEnergyCost = 5f; // Energy cost per shot (adjustable in Inspector)
 
     [SerializeField] int HP;
     [SerializeField] int maxHP;
@@ -188,9 +187,8 @@ public class playerController : MonoBehaviour, IDamage
 
     void shoot()
     {
-        // Handles shooting logic with ammo and energy checks
-        if (ammo <= 0 || !CanUseEnergy(shootEnergyCost)) return; // Prevent fire if out of ammo or energy
-        UseEnergy(shootEnergyCost);
+        // Handles shooting logic with ammo checks only
+        if (ammo <= 0) return; // Prevent fire if out of ammo
 
         shootTimer = 0;
         ammo--;
@@ -204,7 +202,10 @@ public class playerController : MonoBehaviour, IDamage
             if (dmg != null)
                 dmg.takeDamage((int)(shootDamage * damageBoost)); // Applies modified damage if boost active
         }
+
+        updatePlayerUI(); // keep UI accurate after ammo use
     }
+
 
     void StartGlide()
     {
