@@ -23,6 +23,7 @@ public class enemyAI : MonoBehaviour, IDamage
     [SerializeField] GameObject meleePrefab; // Prefab for melee attack
     [SerializeField] float meleeRate; // Rate between melee attacks
     [SerializeField] float meleeRange; // Distance required to use melee
+    [SerializeField] Transform meleePOS; // Spawn point for melee attacks
 
     Color colorOrig;
 
@@ -64,19 +65,19 @@ public class enemyAI : MonoBehaviour, IDamage
         if (seesPlayer)
         {
             agent.stoppingDistance = stoppingDistOrig;
-            agent.SetDestination(gamemanager.instance.player.transform.position);
-            faceTarget();
 
             float distToPlayer = Vector3.Distance(transform.position, gamemanager.instance.player.transform.position);
 
+            // Melee attack when in range
             if (canMelee && meleeTimer >= meleeRate && distToPlayer <= meleeRange)
             {
-                Melee(); // Performs melee attack
+                Melee();
             }
 
+            // Shoot when farther than melee range
             if (canShoot && shootTimer >= shootRate && distToPlayer > meleeRange)
             {
-                Shoot(); // Performs shooting attack
+                Shoot();
             }
         }
         else if (isPatrolling)
@@ -93,14 +94,25 @@ public class enemyAI : MonoBehaviour, IDamage
         playerDir = gamemanager.instance.player.transform.position - headPos.position;
         angleToPlayer = Vector3.Angle(playerDir, transform.forward);
 
-        if (angleToPlayer > FOV * 0.5f) return false;
+        Debug.DrawRay(headPos.position, playerDir); // Debug ray identical to smaller script
 
         RaycastHit hit;
-        Vector3 rayStart = headPos.position + transform.forward * 0.2f; // prevent self-hit
-        if (Physics.Raycast(rayStart, playerDir.normalized, out hit))
+        if (Physics.Raycast(headPos.position, playerDir, out hit))
         {
-            if (hit.collider.CompareTag("Player"))
+            Debug.Log(hit.collider.name);
+
+            if (angleToPlayer <= FOV && hit.collider.CompareTag("Player"))
             {
+                agent.SetDestination(gamemanager.instance.player.transform.position);
+
+                if (shootTimer >= shootRate)
+                {
+                    Shoot();
+                }
+
+                if (agent.remainingDistance <= stoppingDistOrig)
+                    faceTarget();
+
                 return true;
             }
         }
@@ -109,8 +121,7 @@ public class enemyAI : MonoBehaviour, IDamage
 
     void faceTarget()
     {
-        Vector3 dir = gamemanager.instance.player.transform.position - transform.position;
-        Quaternion rot = Quaternion.LookRotation(new Vector3(dir.x, 0, dir.z));
+        Quaternion rot = Quaternion.LookRotation(new Vector3(playerDir.x, 0, playerDir.z));
         transform.rotation = Quaternion.Lerp(transform.rotation, rot, faceTargetSpeed * Time.deltaTime);
     }
 
@@ -185,7 +196,7 @@ public class enemyAI : MonoBehaviour, IDamage
     void Melee()
     {
         meleeTimer = 0; // Resets melee cooldown timer
-        Instantiate(meleePrefab, transform.position + transform.forward * 1f, transform.rotation); // Spawns melee hitbox prefab
+        Instantiate(meleePrefab, meleePOS.position, meleePOS.rotation); // Spawns melee hitbox prefab
     }
 
     void Patrol()
