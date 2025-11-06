@@ -35,7 +35,8 @@ public class gamemanager : MonoBehaviour
         timeScaleOrig = Time.timeScale;
 
         player = GameObject.FindWithTag("Player");
-        playerController playerController = player.GetComponent<playerController>();
+        playerController playerController1 = player.GetComponent<playerController>();
+        playerController playerController = playerController1;
         controller = playerController;
     }
 
