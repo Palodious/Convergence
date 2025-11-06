@@ -6,14 +6,14 @@ public class playerController : MonoBehaviour, IDamage
     // -------------------------------
     // --- Player Movement Settings ---
     // -------------------------------
-    [SerializeField] CharacterController controller; // Character controller used for movement and collisions
-    [SerializeField] LayerMask ignoreLayer; // Layers to ignore in raycasts
-    [SerializeField] float speed; // Normal walking speed
-    [SerializeField] int sprintMod; // Speed multiplier when sprinting
-    [SerializeField] float jumpHeight; // adjust this to control jump height
-    [SerializeField] float jumpSpeed; // Upward velocity when jumping
-    [SerializeField] int maxJumps; // Number of allowed jumps before landing
-    [SerializeField] float gravity; // Gravitational force applied to player
+    [SerializeField] CharacterController controller;
+    [SerializeField] LayerMask ignoreLayer;
+    [SerializeField] float speed;
+    [SerializeField] int sprintMod;
+    [SerializeField] float jumpHeight;
+    [SerializeField] float jumpSpeed;
+    [SerializeField] int maxJumps;
+    [SerializeField] float gravity;
     // -----------------------------
     // --- Advanced Movement ---
     // -----------------------------
@@ -32,16 +32,17 @@ public class playerController : MonoBehaviour, IDamage
     // --------------------------
     // --- Combat & Shooting ---
     // --------------------------
-    [SerializeField] int shootDamage; // Damage dealt per shot
-    [SerializeField] float shootDist; // Distance bullet travels (raycast)
-    [SerializeField] float shootRate; // Time between shots
+    [SerializeField] int shootDamage;
+    [SerializeField] float shootDist;
+    [SerializeField] float shootRate;
     [SerializeField] int ammo; // Current ammo
     [SerializeField] int maxAmmo; // Maximum ammo capacity
+    [SerializeField] float shootEnergyCost = 5f; // Energy cost per shot (adjustable in Inspector)
     // ------------------------
     // --- Health & Shields ---
     // ------------------------
-    [SerializeField] int HP; // Current health points
-    [SerializeField] int maxHP; // Maximum HP value
+    [SerializeField] int HP;
+    [SerializeField] int maxHP;
     [SerializeField] float healthRegenRate; // Rate of HP restoration
     [SerializeField] float healthRegenDelay; // Delay before HP starts regenerating
     [SerializeField] int shield; // Current shield amount
@@ -64,11 +65,11 @@ public class playerController : MonoBehaviour, IDamage
     // ------------------------
     // --- Internal Tracking ---
     // ------------------------
-    Vector3 moveDir; // Stores direction of movement
-    Vector3 playerVel; // Stores vertical velocity (for jump / gravity)
-    int jumpCount; // Tracks current jump count
+    Vector3 moveDir;
+    Vector3 playerVel;
+    int jumpCount;
     int HPOrig; // Stores original HP for reference
-    float shootTimer; // Timer to control firing rate
+    float shootTimer;
     float healthRegenTimer; // Timer for HP regeneration
     float shieldRegenTimer; // Timer for shield regeneration
     bool shieldBroken; // True when shield is depleted
@@ -79,6 +80,7 @@ public class playerController : MonoBehaviour, IDamage
     bool isCrouching; // True when crouching
     float dodgeTimer; // Timer for dodge cooldown
     float wallRunTimer; // Timer for wall-run duration
+    bool isGliding; // Tracks if currently gliding
     Color colorOrig; // Stores original model color for feedback resets
     // -------------------
     // --- Properties ---
@@ -91,7 +93,8 @@ public class playerController : MonoBehaviour, IDamage
     void Start()
     {
         HPOrig = HP;
-        updatePlayerUI();
+        if (gamemanager.instance != null)
+            updatePlayerUI(); // safe null-checked
         HP = maxHP;
         shield = maxShield;
         energy = maxEnergy;
@@ -111,6 +114,25 @@ public class playerController : MonoBehaviour, IDamage
         movement(); // Handles all basic movement inputs
         sprint(); // Handles sprint start/stop input
 
+        // --- Shooting ---
+        if (Input.GetMouseButton(0) && shootTimer >= shootRate)
+        {
+            shoot();
+        }
+
+        // --- Glide Activation ---
+        if (!controller.isGrounded)
+        {
+            if (Input.GetKeyDown(KeyCode.G))
+                StartGlide();
+            if (Input.GetKeyUp(KeyCode.G))
+                StopGlide();
+        }
+        else if (isGliding)
+        {
+            StopGlide(); // Stop glide on landing
+        }
+
         handleHealthRegen(); // Restores HP gradually
         handleShieldRegen(); // Restores shield gradually
         handleEnergyRegen(); // Restores Energy gradually
@@ -127,7 +149,12 @@ public class playerController : MonoBehaviour, IDamage
         }
         else
         {
-            playerVel.y -= gravity * Time.deltaTime;
+            // --- Gravity / Glide Control ---
+            // Applies normal gravity unless gliding (press G mid-air)
+            if (isGliding)
+                playerVel.y = Mathf.Max(playerVel.y - (glideGravity * 0.2f * Time.deltaTime), -glideGravity); // gentle descent while gliding
+            else
+                playerVel.y -= gravity * Time.deltaTime; // regular fall speed
         }
 
         // --- Directional Movement ---
@@ -135,24 +162,34 @@ public class playerController : MonoBehaviour, IDamage
         controller.Move(moveDir * speed * Time.deltaTime);
 
         jump(); // Handle jump input
-        controller.Move(playerVel * Time.deltaTime);
+        controller.Move(playerVel * Time.deltaTime); // Apply vertical motion (jump / gravity)
 
         // --- Advanced Movement Inputs ---
         if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.C) && !isSliding && controller.isGrounded)
-            StartCoroutine(PerformSlide());
+            StartCoroutine(PerformSlide()); // Slide when holding shift + crouch
         else if (Input.GetKey(KeyCode.C))
-            crouch();
+            crouch(); // Hold C to crouch
         else if (Input.GetKeyUp(KeyCode.C))
-            uncrouch();
+            uncrouch(); // Release C to stand
 
-        if (Input.GetButton("Jump") && !controller.isGrounded && playerVel.y <= 0)
-            Glide();
-        if (Input.GetButtonUp("Jump") && !controller.isGrounded)
-            playerVel.y = 0;
+        // --- Glide Activation ---
+        if (!controller.isGrounded)
+        {
+            if (Input.GetKeyDown(KeyCode.G))
+                StartGlide(); // Start gliding in mid-air
+            if (Input.GetKeyUp(KeyCode.G))
+                StopGlide(); // Stop gliding when G is released
+        }
+        else if (isGliding)
+        {
+            StopGlide(); // Automatically stop glide upon landing
+        }
 
+        // --- Wall Running ---
         if (!isWallRunning && canWallRun)
-            CheckWallRun();
+            CheckWallRun(); // Detect and initiate wall run
     }
+
 
     void sprint()
     {
@@ -196,14 +233,18 @@ public class playerController : MonoBehaviour, IDamage
 
     void shoot()
     {
-        shootTimer = 0; // Resets cooldown
-        RaycastHit hit;
+        // Handles shooting logic with ammo and energy checks
+        if (ammo <= 0 || !CanUseEnergy(shootEnergyCost)) return; // Prevent fire if out of ammo or energy
+        UseEnergy(shootEnergyCost);
 
+        shootTimer = 0; // Resets cooldown
+        ammo--;         // Consume one round
+
+        RaycastHit hit;
         // Fires ray from camera forward
         if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
         {
             Debug.Log(hit.collider.name); // Logs hit object name
-
             IDamage dmg = hit.collider.GetComponent<IDamage>();
             if (dmg != null)
                 dmg.takeDamage((int)(shootDamage * damageBoost)); // Applies modified damage if boost active
@@ -228,10 +269,29 @@ public class playerController : MonoBehaviour, IDamage
         isSliding = false; // Ends slide state
     }
 
-    void Glide()
+    void StartGlide()
     {
-        // Reduces gravity while gliding for slower fall
-        playerVel.y = Mathf.Max(playerVel.y - glideGravity * Time.deltaTime, -glideGravity);
+        if (!controller.isGrounded && !isGliding)
+        {
+            isGliding = true;
+            playerVel.y = -1f; // small downward force to start descent
+        }
+    }
+
+    void StopGlide()
+    {
+        if (isGliding)
+            isGliding = false;
+    }
+
+    IEnumerator Glide()
+    {
+        while (isGliding && !controller.isGrounded)
+        {
+            playerVel.y = Mathf.Max(playerVel.y - glideGravity * Time.deltaTime, -glideGravity);
+            controller.Move(playerVel * Time.deltaTime);
+            yield return null;
+        }
     }
 
     void CheckWallRun()
@@ -373,6 +433,7 @@ public class playerController : MonoBehaviour, IDamage
 
         HP -= amount;
         updatePlayerUI();
+        StartCoroutine(screenFlashDamage());
         healthRegenTimer = 0;
 
         if (model != null)
@@ -386,7 +447,16 @@ public class playerController : MonoBehaviour, IDamage
     }
 
     public void updatePlayerUI()
-    { 
-        gamemanager.instance.playerHPBar.fillAmount = (float)HP / maxHP;
+    {
+        if (gamemanager.instance != null && gamemanager.instance.playerHPBar != null)
+            gamemanager.instance.playerHPBar.fillAmount = (float)HP / maxHP;
+    }
+    IEnumerator screenFlashDamage()
+    {
+        if (gamemanager.instance.playerDamageIndicator != null)
+            gamemanager.instance.playerDamageIndicator.gameObject.SetActive(true);
+        yield return new WaitForSeconds(0.1f);
+        if (gamemanager.instance.playerDamageIndicator != null)
+            gamemanager.instance.playerDamageIndicator.gameObject.SetActive(false);
     }
 }
