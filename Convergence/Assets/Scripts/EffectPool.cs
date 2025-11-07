@@ -7,9 +7,12 @@ public class EffectPool : MonoBehaviour
 {
     public static EffectPool Instance;
     public GameObject prefab;
-       
+    public GameObject prefabOneShot;
+
     [SerializeField] int initialRiftJumpPoolSize = 6;
     [SerializeField] AudioClip teleportStartSound; //assign rift jump SFX here
+    [SerializeField] int initialOneShotPoolSize = 9;
+    [SerializeField] AudioClip surgeSound; //assign surge SFX here
 
     private Queue<GameObject> pool = new Queue<GameObject>();
 

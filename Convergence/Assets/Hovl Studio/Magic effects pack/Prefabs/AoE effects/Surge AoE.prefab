@@ -29543,7 +29543,7 @@ GameObject:
   - component: {fileID: 720325515038598322}
   - component: {fileID: 668786554398026484}
   m_Layer: 0
-  m_Name: Pulse AoE
+  m_Name: Surge AoE
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

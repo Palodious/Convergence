@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class pickupItem : MonoBehaviour
 {
-    public enum PickupType { Health, Ammo }
+    public enum PickupType { Health }
     [SerializeField] PickupType type;
     [SerializeField] int amount = 0;
 
@@ -18,10 +18,10 @@ public class pickupItem : MonoBehaviour
                 {
                     player.HPValue += amount;
                 }
-                else if (type == PickupType.Ammo)
+                /*else if (type == PickupType.Ammo)
                 {
                     player.addAmmo(amount);
-                }
+                }*/
             }
 
             Destroy(gameObject);

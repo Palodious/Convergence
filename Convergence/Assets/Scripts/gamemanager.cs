@@ -15,12 +15,11 @@ public class gamemanager : MonoBehaviour
     public TMP_Text gameGoalCountText;
     public Image playerHPBar;
     public Image playerEnergyBar;
-    public Image playerAmmoBar;
-    public Image playerDamageIndicator;
+    public GameObject playerDMGPanel;
 
     public GameObject player;
     public playerController controller;
-    public GameObject playerDMGPanel;
+   
 
     public bool isPaused;
 

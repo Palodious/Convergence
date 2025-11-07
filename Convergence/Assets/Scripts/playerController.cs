@@ -21,8 +21,6 @@ public class playerController : MonoBehaviour, IDamage
     [SerializeField] int shootDamage;
     [SerializeField] float shootDist;
     [SerializeField] float shootRate;
-    [SerializeField] int ammo; // Current ammo
-    [SerializeField] int maxAmmo; // Maximum ammo capacity
 
     [SerializeField] int HP;
     [SerializeField] int maxHP;
@@ -47,8 +45,7 @@ public class playerController : MonoBehaviour, IDamage
     int jumpCount;
     int HPOrig; // Stores original HP for reference
     float shootTimer;
-    int energyOrig; // Stores original Energy for reference
-    int ammoOrig; // Stores original Ammo for reference
+    float energyOrig; // Stores original Energy for reference
     float healthRegenTimer; // Timer for HP regeneration
     float shieldRegenTimer; // Timer for shield regeneration
     bool shieldBroken; // True when shield is depleted
@@ -67,8 +64,8 @@ public class playerController : MonoBehaviour, IDamage
         HPOrig = HP;
         updatePlayerUI();
 
-        energyOrig = (int)energy;
-        ammoOrig = ammo;
+        energyOrig = energy;
+    
         if (gamemanager.instance != null)
             updatePlayerUI(); // safe null-checked
         HP = maxHP;
@@ -191,12 +188,6 @@ public class playerController : MonoBehaviour, IDamage
 
     void shoot()
     {
-        // Handles shooting logic with ammo checks only
-        if (ammo <= 0) return; // Prevent fire if out of ammo
-
-        shootTimer = 0;
-        ammo--;
-
         RaycastHit hit;
 
         if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, shootDist, ~ignoreLayer))
@@ -285,9 +276,9 @@ public class playerController : MonoBehaviour, IDamage
         return energy >= amount;
     }
 
-    public void UseEnergy(float amount)
+    public void UseEnergy(float energyAmount)
     {
-        energy -= amount;
+        energy -= energyAmount;
         updatePlayerUI();
         energyRegenTimer = 0f;
     }
@@ -315,14 +306,6 @@ public class playerController : MonoBehaviour, IDamage
         yield return new WaitForSeconds(0.2f);
         if (model != null)
             model.material.color = colorOrig;
-    }
-
-    public void addAmmo(int value)
-    {
-        ammo += value;
-        updatePlayerUI();
-        if (ammo > maxAmmo)
-            ammo = maxAmmo;
     }
 
     public void takeDamage(int amount)
@@ -366,8 +349,6 @@ public class playerController : MonoBehaviour, IDamage
             gamemanager.instance.playerHPBar.fillAmount = (float)HP / maxHP;
         if (gamemanager.instance != null && gamemanager.instance.playerEnergyBar != null)
             gamemanager.instance.playerEnergyBar.fillAmount = (float)energy / maxEnergy;
-        if (gamemanager.instance != null && gamemanager.instance.playerAmmoBar != null)
-            gamemanager.instance.playerAmmoBar.fillAmount = (float)ammo / maxAmmo;
     }
     IEnumerator screenFlashDamage()
     {
