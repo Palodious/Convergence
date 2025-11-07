@@ -20,6 +20,7 @@ public class gamemanager : MonoBehaviour
 
     public GameObject player;
     public playerController controller;
+    public GameObject playerDMGPanel;
 
     public bool isPaused;
 
