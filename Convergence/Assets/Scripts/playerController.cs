@@ -1,5 +1,6 @@
-using System.Collections;
 using UnityEngine;
+using System.Collections;
+
 
 public class playerController : MonoBehaviour, IDamage
 {
@@ -59,10 +60,13 @@ public class playerController : MonoBehaviour, IDamage
     public float Speed { get => speed; set => speed = value; }
     public int HPValue { get => HP; set => HP = value; }
 
+
     // Start initializes HP, shield, and visuals
     void Start()
     {
         HPOrig = HP;
+        updatePlayerUI();
+
         energyOrig = (int)energy;
         ammoOrig = ammo;
         if (gamemanager.instance != null)
@@ -342,6 +346,7 @@ public class playerController : MonoBehaviour, IDamage
         HP -= amount;
         updatePlayerUI();
         StartCoroutine(screenFlashDamage());
+
         healthRegenTimer = 0;
 
         if (model != null)
@@ -356,6 +361,7 @@ public class playerController : MonoBehaviour, IDamage
 
     public void updatePlayerUI()
     {
+        gamemanager.instance.playerHPBar.fillAmount = (float)HP / HPOrig;
         if (gamemanager.instance != null && gamemanager.instance.playerHPBar != null)
             gamemanager.instance.playerHPBar.fillAmount = (float)HP / maxHP;
         if (gamemanager.instance != null && gamemanager.instance.playerEnergyBar != null)
@@ -365,10 +371,8 @@ public class playerController : MonoBehaviour, IDamage
     }
     IEnumerator screenFlashDamage()
     {
-        if (gamemanager.instance.playerDamageIndicator != null)
-            gamemanager.instance.playerDamageIndicator.gameObject.SetActive(true);
+        gamemanager.instance.playerDMGPanel.SetActive(true);
         yield return new WaitForSeconds(0.1f);
-        if (gamemanager.instance.playerDamageIndicator != null)
-            gamemanager.instance.playerDamageIndicator.gameObject.SetActive(false);
+        gamemanager.instance.playerDMGPanel.SetActive(false);
     }
 }
